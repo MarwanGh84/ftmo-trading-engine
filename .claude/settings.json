@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "defaultMode": "bypassPermissions",
+    "allow": [
+      "Bash",
+      "Read",
+      "Write",
+      "Edit",
+      "Glob",
+      "Grep",
+      "ToolSearch",
+      "mcp__forexfactory__ffcal_get_calendar_events"
+    ],
+    "deny": [
+      "mcp__ctrader",
+      "mcp__ctrader__place_market_order",
+      "mcp__ctrader__place_limit_order",
+      "mcp__ctrader__place_stop_order",
+      "mcp__ctrader__place_stop_limit_order",
+      "mcp__ctrader__close_position",
+      "mcp__ctrader__close_position_partial",
+      "mcp__ctrader__close_all_positions",
+      "mcp__ctrader__amend_position",
+      "mcp__ctrader__amend_order",
+      "mcp__ctrader__cancel_order",
+      "mcp__ctrader__cancel_all_pending_orders"
+    ]
+  }
+}

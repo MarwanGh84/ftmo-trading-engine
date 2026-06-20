@@ -1,0 +1,6 @@
+#!/bin/bash
+# Single entrypoint for the FTMO engine. cd's into the project (needed for `python -m
+# engine`) and uses the miniconda python where gspread/requests are installed, so the
+# scheduled runs never need a compound `cd && python` command (cleaner permissioning).
+cd /Users/marwanghostine/trading || exit 1
+exec /Users/marwanghostine/miniconda3/bin/python3 -m engine.cli "$@"
