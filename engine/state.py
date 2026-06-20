@@ -143,17 +143,22 @@ def apply_daily_reset(state: dict, balance: float, equity: float) -> bool:
     if last_day != today:
         for k, v in _DAILY_DEFAULTS.items():
             state[k] = v.copy() if isinstance(v, (list, dict)) else v
-        state["day_start_balance"] = max(balance, equity)
+        state["day_start_balance"] = balance  # FTMO daily limit is measured from closed balance, not equity
         return True
 
     if state.get("day_start_balance") is None:
-        state["day_start_balance"] = max(balance, equity)
+        state["day_start_balance"] = balance
     return False
 
 
 def news_windows_fresh(state: dict) -> bool:
-    """True only if morning_brief populated news windows for today's Dubai date."""
-    return state.get("news_windows_date") == now_dubai().date().isoformat()
+    """True only if morning_brief populated news windows for today's FTMO (Prague) date.
+
+    Must use the Prague date (not Dubai) because the FTMO trading day resets at 00:00 Prague.
+    A morning brief at 09:32 Dubai stores news_windows_date as the Prague date; a run at
+    23:50 Dubai is still the SAME Prague day — checking Dubai date would falsely mark them stale
+    and block all trades for the rest of a valid FTMO day."""
+    return state.get("news_windows_date") == now_ftmo().date().isoformat()
 
 
 # ---- operational freeze (fail-closed) ------------------------------------
@@ -169,10 +174,14 @@ def freeze(state: dict, reason: str, sticky: bool = False) -> bool:
     return not was
 
 
-def unfreeze(state: dict) -> None:
+def unfreeze(state: dict) -> bool:
+    """Clear a non-sticky operational freeze. Returns False if blocked by a sticky freeze
+    (phase-target / emergency) — those require explicit CLI `ftmo unfreeze --force`."""
+    if state.get("frozen_sticky"):
+        return False
     state["frozen"] = False
     state["frozen_reason"] = ""
-    state["frozen_sticky"] = False
+    return True
 
 
 def record_trading_day(state: dict) -> None:

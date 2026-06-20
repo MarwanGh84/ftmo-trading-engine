@@ -217,8 +217,8 @@ def cmd_watchdog(args) -> int:
     if state.get("unreachable_streak", 0) > 0:
         state["unreachable_streak"] = 0
         if state.get("frozen") and state.get("frozen_reason", "").startswith("cTrader unreachable"):
-            state_mod.unfreeze(state)
-            telegram.send("✅ Recovered — cTrader reachable again; freeze lifted.")
+            if state_mod.unfreeze(state):
+                telegram.send("✅ Recovered — cTrader reachable again; freeze lifted.")
     state_mod.apply_daily_reset(state, balance, equity)
 
     # 1. Kill-switch FIRST (the one thing that must always run). Guard against a transient bad/zero
@@ -232,7 +232,7 @@ def cmd_watchdog(args) -> int:
         telegram.send(f"🚨 KILL-SWITCH: equity ${equity:.2f} hit −{config.DAILY_LOSS_LIMIT_PCT}% "
                       f"floor ${floor:.2f}. NO new trades today. Existing stops remain.")
     # Phase target reached + min trading days -> sticky freeze (protect the pass, await next account).
-    if guards.phase_target_reached(state, equity) and not state.get("frozen_sticky"):
+    if guards.phase_target_reached(state, equity, balance=balance) and not state.get("frozen_sticky"):
         state_mod.freeze(state, "phase target reached + min trading days — protect the pass; "
                          "await the next account and re-arm manually", sticky=True)
         telegram.send("🏁 PHASE TARGET REACHED — froze new trades to protect the pass. "
@@ -260,8 +260,8 @@ def cmd_watchdog(args) -> int:
                 if state_mod.freeze(state, reason):
                     telegram.send(f"🧊 FROZEN — {reason}. No new entries until cleared.")
             elif state.get("frozen"):
-                state_mod.unfreeze(state)
-                telegram.send("✅ Unfroze — operational condition cleared.")
+                if state_mod.unfreeze(state):
+                    telegram.send("✅ Unfroze — operational condition cleared.")
         if trade_manager.is_weekend_flat_time(state_mod.now_dubai()):
             notes = trade_manager.weekend_flat(client, state)   # FTMO Standard: no weekend holds
         else:
@@ -407,7 +407,7 @@ def cmd_set_news(args) -> int:
         print("set-news expects a JSON list"); return 2
     state = state_mod.load()
     state["news_windows"] = windows
-    state["news_windows_date"] = state_mod.now_dubai().date().isoformat()
+    state["news_windows_date"] = state_mod.now_ftmo().date().isoformat()  # FTMO day, not Dubai
     state_mod.save(state)
     print(f"stored {len(windows)} news window(s) for {state['news_windows_date']}")
     return 0

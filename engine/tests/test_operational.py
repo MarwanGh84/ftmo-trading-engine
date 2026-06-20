@@ -25,8 +25,17 @@ def test_daily_reset_on_prior_ftmo_day():
     reset = s.apply_daily_reset(st, balance=10100, equity=10080)
     assert reset is True
     assert st["trades_taken_today"] == 0 and st["poor_outcomes_today"] == 0
-    assert st["day_start_balance"] == 10100        # max(balance, equity)
-    assert st["account_baseline"] == 10100         # set on first ever run
+    assert st["day_start_balance"] == 10100        # balance, not max(balance, equity)
+    assert st["account_baseline"] is not None      # set on first ever run
+
+
+def test_daily_reset_uses_balance_not_equity():
+    """day_start_balance must key to CLOSED balance, not floating equity.
+    Using max(balance, equity) sets the daily floor artificially high when a trade is open."""
+    st = dict(s._SCHEMA)
+    st["last_run_iso"] = "2020-01-01T00:00:00+04:00"
+    s.apply_daily_reset(st, balance=10000, equity=10300)  # open winner floating +300
+    assert st["day_start_balance"] == 10000   # balance, NOT 10300 (equity)
 
 
 def test_no_reset_same_ftmo_day():
@@ -44,8 +53,20 @@ def test_freeze_and_unfreeze():
     assert s.freeze(st, "cTrader unreachable 2 cycles") is True   # newly frozen
     assert st["frozen"] is True and "unreachable" in st["frozen_reason"]
     assert s.freeze(st, "again") is False          # already frozen
-    s.unfreeze(st)
+    result = s.unfreeze(st)
+    assert result is True
     assert st["frozen"] is False and st["frozen_reason"] == ""
+
+
+def test_sticky_freeze_cannot_be_auto_unfrozen():
+    """A sticky freeze (phase target, emergency) must survive unfreeze() calls —
+    only CLI --force should clear it."""
+    st = {}
+    s.freeze(st, "phase target reached", sticky=True)
+    assert st["frozen_sticky"] is True
+    result = s.unfreeze(st)          # routine auto-unfreeze (e.g. from feed-recovered path)
+    assert result is False           # blocked
+    assert st["frozen"] is True      # freeze remains in place
 
 
 def test_record_trading_day_dedup():

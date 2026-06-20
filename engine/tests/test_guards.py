@@ -14,6 +14,18 @@ def test_phase_target_reached_needs_target_and_min_days():
     assert guards.phase_target_reached(st, config.FTMO_INITIAL_BALANCE + 100) is False
 
 
+def test_phase_target_uses_balance_not_equity():
+    """Equity above target but balance below — must NOT trigger a sticky freeze."""
+    st = {"trading_days": ["a", "b", "c", "d"]}
+    equity_above_target = config.FTMO_INITIAL_BALANCE + config.FTMO_PROFIT_TARGET_USD + 50
+    balance_below_target = config.FTMO_INITIAL_BALANCE + config.FTMO_PROFIT_TARGET_USD - 100
+    # Old bug: would return True using equity; correct: False because balance is below target
+    assert guards.phase_target_reached(st, equity_above_target, balance=balance_below_target) is False
+    # With balance above target it should fire
+    balance_above_target = config.FTMO_INITIAL_BALANCE + config.FTMO_PROFIT_TARGET_USD + 50
+    assert guards.phase_target_reached(st, equity_above_target, balance=balance_above_target) is True
+
+
 def test_unknown_positions():
     st = {"open_positions": [{"id": 1, "label": "ftmo-engine"}, {"id": 2, "label": ""},
                              {"id": 3, "label": "other"}]}

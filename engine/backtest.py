@@ -75,8 +75,14 @@ def mean_reversion(bars, i):
 STRATEGIES = {"trend_pullback": trend_pullback, "breakout": breakout, "mean_reversion": mean_reversion}
 
 
-def simulate(bars: list, strat) -> list:
-    """Return the list of R-multiple outcomes for one symbol's bars."""
+def simulate(bars: list, strat, spread_r: float = 0.0, commission_r: float = 0.0) -> list:
+    """Return the list of R-multiple outcomes (net of costs) for one symbol's bars.
+
+    spread_r and commission_r are round-trip costs expressed as fractions of the stop distance
+    (R). Example: a 15-pip stop with 1-pip spread + 0.3-pip commission = cost_r = 1.3/15 ≈ 0.087.
+    Wins are deflated by cost_r; losses are inflated by cost_r. A backtest without these params
+    is an UPPER BOUND on performance — not a realistic estimate."""
+    cost_r = spread_r + commission_r
     out, i, n = [], 50, len(bars)
     while i < n - 1:
         sig = strat(bars, i)
@@ -107,13 +113,22 @@ def simulate(bars: list, strat) -> list:
             last = bars[-1]["close"]
             outcome = ((last - entry) if buy else (entry - last)) / sd
             exit_i = n - 1
+        # Apply round-trip cost: wins are smaller, losses are larger
+        if outcome > 0:
+            outcome = max(0.0, outcome - cost_r)
+        else:
+            outcome = outcome - cost_r
         out.append(outcome)
         i = exit_i + 1                           # no overlapping trades on one symbol
     return out
 
 
-def run(client, symbols: list, strat_name: str, timeframe: str = "d1", days: int = 1400) -> dict:
-    """Fetch history per symbol, simulate, return per-symbol + aggregate R stats."""
+def run(client, symbols: list, strat_name: str, timeframe: str = "d1", days: int = 1400,
+        spread_r: float = 0.0, commission_r: float = 0.0) -> dict:
+    """Fetch history per symbol, simulate, return per-symbol + aggregate R stats.
+
+    Pass spread_r + commission_r (as fractions of stop distance) for a realistic cost model.
+    Example: 1.3-pip round-trip on a 15-pip stop = spread_r=0.053 + commission_r=0.020."""
     strat = STRATEGIES[strat_name]
     to = datetime.now(timezone.utc)
     frm = to - timedelta(days=days)
@@ -126,7 +141,8 @@ def run(client, symbols: list, strat_name: str, timeframe: str = "d1", days: int
             continue
         if len(bars) < 60:
             continue
-        Rs = simulate(bars, strat)
+        Rs = simulate(bars, strat, spread_r=spread_r, commission_r=commission_r)
         per[sym] = Rs
         all_R.extend(Rs)
-    return {"strategy": strat_name, "timeframe": timeframe, "per_symbol": per, "all_R": all_R}
+    return {"strategy": strat_name, "timeframe": timeframe, "per_symbol": per, "all_R": all_R,
+            "cost_model": {"spread_r": spread_r, "commission_r": commission_r}}

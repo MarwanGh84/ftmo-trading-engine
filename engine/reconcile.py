@@ -97,8 +97,9 @@ def detect_closures(state: dict, old_by_id: dict, new_ids: set, client: McpClien
     closures = []
     for pid in vanished:
         net = _realized_pnl(items, pid)
-        if net is None:  # fall back to last-seen floating P/L if history lookup failed
-            net = old_by_id.get(pid, {}).get("net_profit")
+        # Do NOT fall back to last-seen floating P/L — that number is unrealized and could
+        # misclassify a closed loss as a win. If history lookup failed, leave net=None so
+        # _classify() returns UNKNOWN, which counts as a poor outcome (fail-closed).
         result = _classify(net, scratch_thr)
         # Only the engine's OWN trades count toward the "stop after 2 poor outcomes" tilt
         # limit — a manually-opened position closing at a loss shouldn't halt the engine.

@@ -221,8 +221,8 @@ def scan(client, state: dict) -> list[str]:
                 telegram.send(f"🧊 FROZEN — market data degraded ({n} symbols quoting). "
                               f"Check cTrader Market Watch.")
         elif state.get("frozen") and "feed degraded" in state.get("frozen_reason", ""):
-            state_mod.unfreeze(state)
-            telegram.send("✅ Unfroze — market data restored.")
+            if state_mod.unfreeze(state):
+                telegram.send("✅ Unfroze — market data restored.")
 
     # Uptime Kuma heartbeat: ping the push URL after every successful sweep so the monitor can
     # alert if the scanner silently stops running (launchd dies, Mac sleeps, cTrader unreachable).

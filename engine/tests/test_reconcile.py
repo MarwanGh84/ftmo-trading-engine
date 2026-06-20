@@ -95,11 +95,13 @@ def test_detect_closure_win_no_bump():
     assert state["poor_outcomes_today"] == 0
 
 
-def test_detect_closure_falls_back_to_floating_when_history_missing():
+def test_detect_closure_fails_closed_when_history_missing():
+    """When order history lookup fails, net=None → UNKNOWN → counts as poor outcome (fail-closed).
+    We must not fall back to last-seen floating P/L which could misclassify a real loss as a win."""
     state = {"day_start_balance": 10000, "poor_outcomes_today": 0}
     old_by_id = {5: {"id": 5, "symbol": "EURUSD", "net_profit": -25.0, "label": "ftmo-engine"}}
     closures = reconcile.detect_closures(state, old_by_id, new_ids=set(),
                                          client=_FakeClient([]))  # empty history
-    assert closures[0]["net"] == -25.0
-    assert closures[0]["result"] == "LOSS"
+    assert closures[0]["net"] is None
+    assert closures[0]["result"] == "UNKNOWN"
     assert state["poor_outcomes_today"] == 1

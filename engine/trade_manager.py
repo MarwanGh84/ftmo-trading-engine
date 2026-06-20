@@ -35,8 +35,13 @@ def plan_actions(side: str, entry: float, risk_dist: float, price: float, plan: 
         plan["partial_done"] = True
 
     if R >= config.TRAIL_START_R:
-        target_R = int(math.floor(R / config.TRAIL_STEP_R)) - 1   # lock in floor(R)-1 R
-        if target_R > plan.get("trail_R", 0):
+        # Cap the ratchet to ONE step per management cycle. Without the cap, a news-driven
+        # gap from +2.1R to +6.5R in a single bar would move the stop 4 steps in one MCP call
+        # — a dramatic stop change that can fail cTrader validation or confuse position tracking.
+        ideal_R = int(math.floor(R / config.TRAIL_STEP_R)) - 1   # where we want to be
+        current_trail = plan.get("trail_R", 0)
+        target_R = min(ideal_R, current_trail + 1)                # at most one step per cycle
+        if target_R > current_trail:
             new_sl = entry + target_R * risk_dist if side == "buy" else entry - target_R * risk_dist
             actions.append({"type": "trail", "sl": new_sl, "to_R": target_R})
             plan["trail_R"] = target_R

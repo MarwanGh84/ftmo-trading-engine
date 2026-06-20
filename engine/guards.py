@@ -7,10 +7,15 @@ from datetime import datetime
 from . import config
 
 
-def phase_target_reached(state: dict, equity: float) -> bool:
+def phase_target_reached(state: dict, equity: float, balance: float | None = None) -> bool:
     """True once the phase profit target is reached AND min trading days are met — time to
-    stop and await the next account (sticky freeze)."""
-    profit = equity - config.FTMO_INITIAL_BALANCE
+    stop and await the next account (sticky freeze).
+
+    FTMO measures profit targets against closed BALANCE, not floating equity. Using equity
+    could trigger a premature sticky freeze while an open winner is still running (equity >
+    target) that then closes at breakeven — account frozen but target not actually hit.
+    Falls back to equity if balance is not provided (backward compat)."""
+    profit = (balance if balance is not None else equity) - config.FTMO_INITIAL_BALANCE
     return (config.FTMO_STOP_AT_TARGET
             and profit >= config.FTMO_PROFIT_TARGET_USD
             and len(state.get("trading_days", [])) >= config.FTMO_MIN_TRADING_DAYS)

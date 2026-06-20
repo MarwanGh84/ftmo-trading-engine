@@ -6,6 +6,7 @@ enforces the daily request cap, and never retries more than RETRY_MAX times.
 """
 from __future__ import annotations
 import atexit
+import fcntl
 import json
 import time
 from datetime import datetime
@@ -40,13 +41,22 @@ def _load_counter() -> dict:
 
 
 def _bump_counter(n: int = 1) -> int:
+    """Atomically increment the daily request counter using an exclusive file lock.
+    Without the lock, concurrent scanner + watchdog calls could both read count=1799,
+    both write 1800, and a real 1801st request would slip through the cap."""
     config.LOG_DIR.mkdir(parents=True, exist_ok=True)
-    c = _load_counter()
-    if c.get("date") != _today():
-        c = {"date": _today(), "count": 0}
-    c["count"] += n
-    config.REQUEST_LOG.write_text(json.dumps(c))
-    return c["count"]
+    lock_path = config.LOG_DIR / "requests.lock"
+    with open(lock_path, "w") as lf:
+        try:
+            fcntl.flock(lf, fcntl.LOCK_EX)
+            c = _load_counter()
+            if c.get("date") != _today():
+                c = {"date": _today(), "count": 0}
+            c["count"] += n
+            config.REQUEST_LOG.write_text(json.dumps(c))
+            return c["count"]
+        finally:
+            fcntl.flock(lf, fcntl.LOCK_UN)
 
 
 def requests_used_today() -> int:

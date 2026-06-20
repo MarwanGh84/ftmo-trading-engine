@@ -88,7 +88,7 @@ SCAN_TREND_MIN_ATR = 1.0         # SMA20 must move >= this many ATRs over the lo
 SCAN_TREND_REGIME_ONLY = True    # gate pings on a trending regime aligned with the level (support needs
                                  # trend_down, resistance needs trend_up) — drops touches in chop/ranges
 # ---- Shadow journal (graded would-have outcomes — measures the filtering edge) -----
-SHADOW_EXPIRY_HOURS = 48         # an ungraded candidate auto-closes as "expired" after this long
+SHADOW_EXPIRY_HOURS = 168        # an ungraded candidate auto-closes as "expired" after this long (1 week)
 RETRY_MAX = 3                    # tool-call retry ceiling (order placement uses retries=1)
 RETRY_BACKOFF_SEC = 2.0
 # The session HANDSHAKE (connect) is idempotent, so it can patiently ride out a brief bridge

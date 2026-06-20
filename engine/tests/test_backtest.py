@@ -33,3 +33,33 @@ def test_simulate_stop_first_when_both_in_bar():
 def test_atr_positive():
     bars = [_bar(100 + k, 101 + k, 99 + k, 100 + k) for k in range(20)]
     assert bt._atr(bars) > 0
+
+
+def test_cost_model_deflates_wins_and_inflates_losses():
+    """With costs applied, win R must be smaller and loss R must be larger (more negative)."""
+    def always_long(bars, i):
+        return {"side": "buy", "stop_dist": 1.0, "rr": 2.0} if i == 50 else None
+
+    def always_long_stop(bars, i):
+        return {"side": "buy", "stop_dist": 1.0, "rr": 2.0} if i == 50 else None
+
+    # Win case
+    win_bars = [_bar(100, 100.5, 99.5, 100) for _ in range(51)]
+    win_bars.append(_bar(100, 100, 100, 100))
+    win_bars.append(_bar(100, 102.5, 100, 102))   # hits target -> +2R gross
+
+    cost_r = 0.05
+    [R_no_cost] = bt.simulate(win_bars, always_long)
+    [R_with_cost] = bt.simulate(win_bars, always_long, spread_r=cost_r)
+    assert R_no_cost == 2.0
+    assert R_with_cost == 2.0 - cost_r  # deflated
+
+    # Loss case
+    loss_bars = [_bar(100, 100.5, 99.5, 100) for _ in range(51)]
+    loss_bars.append(_bar(100, 100, 100, 100))
+    loss_bars.append(_bar(100, 100, 98.5, 100))   # hits stop 99 -> -1R gross
+
+    [R_loss_no_cost] = bt.simulate(loss_bars, always_long_stop)
+    [R_loss_with_cost] = bt.simulate(loss_bars, always_long_stop, spread_r=cost_r)
+    assert R_loss_no_cost == -1.0
+    assert R_loss_with_cost == -1.0 - cost_r  # more negative

@@ -9,6 +9,7 @@ write tools); it can only hand a proposal dict to this module.
 """
 from __future__ import annotations
 import json
+import time
 from datetime import datetime, timezone, timedelta
 
 from . import config, risk, rails, news, telegram, sheets
@@ -110,20 +111,11 @@ def build_context(client: McpClient, proposal: dict, state: dict) -> dict:
     # REFUSES the trade — never trade without a live quote.
     quote_stale = d.get("bid") is None or d.get("ask") is None
     if quote_stale:
-        try:
-            from datetime import timedelta as _td
-            _to = datetime.now(timezone.utc)
-            bars = client.call("get_trendbars", {"symbolName": sym, "timeframe": "h1",
-                               "from": (_to - _td(days=3)).isoformat(), "to": _to.isoformat(),
-                               "limit": 1}).get("bars", [])
-            last = float(bars[-1]["close"]) if bars else None
-        except Exception:
-            last = None
-        if last is None:
-            raise RuntimeError(f"no live quote and no fallback price for {sym}")
-        bid = ask = last
-    else:
-        bid, ask = float(d["bid"]), float(d["ask"])
+        # Never size from a stale price — the spread_quote rail will also refuse, but aborting
+        # here avoids computing a lot size from potentially 3-day-old data (100+ pips off).
+        raise RuntimeError(f"no live bid/ask for {sym} — symbol may not be subscribed "
+                           f"in cTrader Market Watch or feed is down. No trade.")
+    bid, ask = float(d["bid"]), float(d["ask"])
 
     side = proposal["side"].lower()
     if proposal.get("order_type", "market") == "market":
@@ -287,8 +279,9 @@ def execute(proposal: dict) -> dict:
         args = order_args if tool == "place_market_order" else {**order_args, "limitPrice": p["entry"]}
         res = client.call(tool, args, retries=1, timeout=config.CONFIRM_TIMEOUT_SEC)
     except Exception as e:
-        # The order may have landed despite a timeout. Reconcile and check before failing —
-        # never blindly resend (that's how you get duplicates).
+        # The order may have landed despite a timeout. Wait 5s for cTrader to finish processing
+        # the confirmation dialog before reconciling — an immediate reconcile can race the fill.
+        time.sleep(5)
         reconcile(state, client)
         if _live_ids() - pre_ids:
             res = {"recovered_after_timeout": True, "error": str(e)}

@@ -108,7 +108,12 @@ def grade_open(client, now: datetime | None = None) -> list:
                                "from": ts.isoformat(), "to": now.isoformat()}).get("bars", [])
         except Exception:
             bars = []
-        res = grade(s["side"], s["entry"], s["stop"], s["target"], bars)
+        # Skip the first bar (the one that was current when the candidate was logged).
+        # That bar's high/low touching the entry level doesn't confirm a fill — the candidate
+        # was observed AT the level, not necessarily filled. Grading from bar[1] onward means
+        # we require price to revisit the level on a subsequent bar, which is a cleaner fill
+        # signal and prevents overstating the take win-rate.
+        res = grade(s["side"], s["entry"], s["stop"], s["target"], bars[1:] if len(bars) > 1 else [])
         if res in ("win", "loss"):
             s["status"], s["result"], s["result_ts"] = res, res, now.isoformat()
             graded.append(s); dirty = True

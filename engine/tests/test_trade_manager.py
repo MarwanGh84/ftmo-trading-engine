@@ -60,3 +60,15 @@ def test_short_trail_direction():
 def test_r_multiple():
     assert tm.r_multiple("buy", 1.10, 0.0030, 1.1030) == pytest.approx(1.0)
     assert tm.r_multiple("sell", 1.10, 0.0030, 1.0970) == pytest.approx(1.0)
+
+
+def test_trail_ratchet_capped_to_one_step_per_cycle():
+    """A news gap from +2.1R to +6.5R in one bar must only advance trail by 1 step, not 4.
+    Jumping multiple steps in one MCP call can exceed cTrader's stop-change validation."""
+    plan = {"be_done": True, "partial_done": True, "trail_R": 1}  # currently locked at 1R
+    # Price jumped to +6.5R (ideal would be +5R lock, but cap to +2R this cycle)
+    acts, updated_plan = tm.plan_actions("buy", 1.1000, 0.0030, 1.1195, plan)  # +6.5R
+    trail_acts = [a for a in acts if a["type"] == "trail"]
+    assert len(trail_acts) == 1
+    assert updated_plan["trail_R"] == 2   # only one step forward from trail_R=1
+    assert trail_acts[0]["to_R"] == 2
