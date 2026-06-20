@@ -10,6 +10,8 @@ Goal: close out the day, check overnight/weekend risk, log everything.
    confirmation for now; the engine does not auto-flatten.)
 3. Review the day vs the journal: did every trade have a stop at entry, correct sizing, and pass
    the checklist? Note any rail refusals and why. Record one lesson if there is one.
+   Run `~/trading/bin/ftmo shadow-stats` — note the current filtering edge (take win% − skip win%)
+   and graded sample count. If a pattern is emerging (e.g. skips outperforming takes), flag it.
    **On Fridays:** run `~/trading/bin/ftmo stats --report` for the weekly performance review (win
    rate / profit factor / expectancy by pair), and make sure the account is FLAT for the weekend
    (FTMO Standard forbids holding over the weekend) — surface any open position to close.

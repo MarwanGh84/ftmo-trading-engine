@@ -57,7 +57,7 @@ outcome so we can prove (or disprove) the filtering edge on paper. See `ftmo sha
      ny_breakout_retest / daily_level_rejection / news_aftermath / range_mean_reversion /
      external_signal — for Instagram/external signals you paste into chat; vet them inline like any
      setup: audit → D1/H4/H1 structure → news → all rails, auto-place only if they pass, tag external_signal)
-   - `regime` (trend / range / highvol / lowvol) — from your top-down read
+   - `regime` (trend_up / trend_down / range / highvol / lowvol) — from your top-down read; use `trend_up` or `trend_down` when the D1 SMA20 is clearly sloping (the scanner labels this); `range` when price is oscillating without directional slope
    - `confidence` (integer 0–100) — your honest conviction in the setup
    The engine sizes from the stop, runs all rails, and either places (if ARMED) or dry-runs.
 4. To manage: `~/trading/bin/ftmo manage --action be|trail|partial|close --position <id>` or
@@ -67,7 +67,7 @@ outcome so we can prove (or disprove) the filtering edge on paper. See `ftmo sha
    Telegram-reports — all automatically. **Do NOT create Google Drive files.** If you add a journal
    note, keep it to ≤3 concise lines. Reporting is: Google Sheet + journal.md + Telegram only.
 
-## THE RAILS (17, enforced in engine/rails.py — informational here)
+## THE RAILS (20, enforced in engine/rails.py — informational here)
 Kill-switch −2% daily (off day-start balance) · per-trade risk 0.25–0.5% (reduce to 0.25% after a
 poor outcome) · max 5 trades/day (FILLS — pending limit orders don't count) · stop after 2 poor outcomes · SL mandatory at entry, never
 widened/removed · R:R ≥1.5 · min broker size · news blackout ±15 min around HIGH-impact events · no

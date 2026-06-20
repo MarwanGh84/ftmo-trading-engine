@@ -4,6 +4,7 @@ Goal: find at most one clean setup and let the engine execute it; manage open po
 
 **All engine commands use the wrapper `~/trading/bin/ftmo`. NEVER call cTrader MCP tools directly.**
 
+0. `~/trading/bin/ftmo shadow-stats` — one-line check: how many graded samples do we have and what is the current filtering edge (take win% − skip win%)? If n < 30, note it and proceed with extra caution — the edge is statistically unproven. This is context, not a blocker.
 1. `~/trading/bin/ftmo audit --report`. If cTrader unreachable, STOP. If kill-switch HIT,
    or trades_today (fills) ≥ 5, or poor_outcomes ≥ 2 → manage existing positions only, take no new entry,
    Telegram "limits reached — no new trades," and finish.
@@ -13,7 +14,10 @@ Goal: find at most one clean setup and let the engine execute it; manage open po
    --order <id>`. Only act on engine-labelled positions; leave the user's manual trades alone.
 3. **Start with the scanner's flagged candidates:** `~/trading/bin/ftmo candidates` lists the pairs
    the bot found sitting at key levels since the last run — analyze THESE first (this is the bot
-   handing setups to you). Then continue with a **top-down scan of the FULL watchlist** (EURUSD,
+   handing setups to you). Each candidate now includes a **D1 regime** (`trend_up` / `trend_down` /
+   `range`): a support touch in `trend_down` or resistance touch in `trend_up` is a higher-quality
+   cue than the same touch in `range` — weight it accordingly. A `range` regime candidate needs
+   extra confluence to qualify. Then continue with a **top-down scan of the FULL watchlist** (EURUSD,
    GBPUSD, USDJPY, AUDUSD, USDCAD, NZDUSD, USDCHF, EURJPY, GBPJPY, EURGBP, XAUUSD, AUDJPY, CADJPY,
    NZDJPY, EURAUD, GBPAUD, EURCHF). On USD-news days,
    lean on the non-USD crosses (AUD/CAD/NZD/EUR/GBP/JPY/CHF combos) that the event doesn't touch. For
