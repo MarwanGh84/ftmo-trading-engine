@@ -1,0 +1,55 @@
+#!/usr/bin/env python3
+"""Scanner heartbeat check — runs every 40 min via launchd.
+Reads state.json and alerts via Telegram if the scanner hasn't run in over 40 minutes
+during active hours (10:00–22:00 Dubai). Silent outside active hours.
+"""
+import json, sys
+from pathlib import Path
+from datetime import datetime, timezone, timedelta
+
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+
+from engine import config, telegram
+from engine import state as state_mod
+
+ALERT_AFTER_MIN = 40
+SCAN_START, SCAN_END = config.SCAN_HOURS_DUBAI   # e.g. (10, 22)
+
+now = state_mod.now_dubai()
+if not (SCAN_START <= now.hour < SCAN_END):
+    sys.exit(0)   # outside active hours — nothing to check
+
+state_file = config.STATE_FILE
+if not state_file.exists():
+    telegram.send("⚠️ Heartbeat: state.json missing — scanner may not have run yet.")
+    sys.exit(1)
+
+try:
+    state = json.loads(state_file.read_text())
+except Exception as e:
+    telegram.send(f"⚠️ Heartbeat: could not read state.json — {e}")
+    sys.exit(1)
+
+# The scanner stores candidates_time as HH:MM (Dubai local, today). Convert to a datetime.
+candidates_time = state.get("candidates_time")   # e.g. "14:37"
+if not candidates_time:
+    telegram.send("⚠️ Heartbeat: scanner has never run — no candidates_time in state.")
+    sys.exit(1)
+
+try:
+    h, m = map(int, candidates_time.split(":"))
+    last_scan = now.replace(hour=h, minute=m, second=0, microsecond=0)
+    # If the stored time is in the future (just past midnight edge case), subtract a day
+    if last_scan > now:
+        last_scan -= timedelta(days=1)
+except Exception:
+    telegram.send(f"⚠️ Heartbeat: cannot parse candidates_time '{candidates_time}'")
+    sys.exit(1)
+
+elapsed_min = (now - last_scan).total_seconds() / 60
+if elapsed_min > ALERT_AFTER_MIN:
+    telegram.send(
+        f"🔇 Scanner silent for {elapsed_min:.0f} min (last sweep: {candidates_time} Dubai). "
+        f"Check launchd or cTrader bridge."
+    )
