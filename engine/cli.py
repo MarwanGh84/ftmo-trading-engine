@@ -1,11 +1,12 @@
 """Engine CLI — the interface the scheduled Claude runs and launchd call.
 
 Subcommands:
-  audit      read-only account+buffer snapshot; reconcile; daily reset; (optional report)
-  execute    validate+place a trade from a proposal JSON (rails enforced; honors ARMED)
-  manage     move-to-BE / trail / partial-TP on an open position (never-widen guarded)
-  eod        end-of-day summary; weekend/CB checks; report
-  watchdog   lightweight -2% kill-switch check (for the 5-min launchd job)
+  audit       read-only account+buffer snapshot; reconcile; daily reset; (optional report)
+  execute     validate+place a trade from a proposal JSON (rails enforced; honors ARMED)
+  manage      move-to-BE / trail / partial-TP on an open position (never-widen guarded)
+  eod         end-of-day summary; weekend/CB checks; report
+  watchdog    lightweight -2% kill-switch check (for the 5-min launchd job)
+  cot-update  download CFTC TFF report; update macro bias cache (run Saturday)
 
 Run from ~/trading:  python3 -m engine.cli <subcommand> [...]
 """
@@ -27,6 +28,7 @@ from . import guards
 from . import backtest as backtest_mod
 from . import stats as stats_mod
 from . import shadow as shadow_mod
+from . import cot as cot_mod
 
 
 # Scheduled Claude runs (Dubai local, Mon–Fri). Mirrors the .claude/scheduled-tasks crons so the
@@ -468,6 +470,27 @@ def cmd_shadow_stats(args) -> int:
     return 0
 
 
+def cmd_cot_update(args) -> int:
+    """Download the CFTC TFF report and update the local COT macro bias cache.
+
+    Fetches the current-year Leveraged Money (hedge fund / CTA) net positioning for
+    major FX futures from cftc.gov, merges new records into logs/cot_history.json, and
+    writes a clean summary to cot_bias.json. Safe to run repeatedly — only new weeks
+    are added. Prints a formatted report; --report also sends it via Telegram.
+    """
+    try:
+        bias, added = cot_mod.update()
+    except Exception as e:
+        print(f"COT update failed: {e}")
+        return 1
+    report = cot_mod.format_report(bias)
+    print(report)
+    print(f"\n(+{added} new week(s) added to history)")
+    if args.report:
+        telegram.send(report)
+    return 0
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(prog="engine")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -528,6 +551,10 @@ def main(argv=None) -> int:
     sg = sub.add_parser("shadow-grade"); sg.set_defaults(func=cmd_shadow_grade)
     sst = sub.add_parser("shadow-stats"); sst.add_argument("--report", action="store_true")
     sst.set_defaults(func=cmd_shadow_stats)
+
+    cot = sub.add_parser("cot-update")
+    cot.add_argument("--report", action="store_true", help="also send result via Telegram")
+    cot.set_defaults(func=cmd_cot_update)
 
     args = ap.parse_args(argv)
     # Serialize state-mutating commands across processes (5-min watchdog / scheduled runs /

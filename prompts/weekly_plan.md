@@ -16,19 +16,21 @@ All engine commands use `~/trading/bin/ftmo`. NEVER call cTrader MCP tools direc
    Also run `~/trading/bin/ftmo shadow-stats` — report the filtering edge metric (take win% − skip
    win%) and total graded sample count. Once n ≥ 30, this becomes the primary signal for whether
    the filtering adds value. If skips are consistently outperforming takes, flag it in the plan.
-5. **Macro positioning layer (COT + FXSSI)** — use this to colour directional bias, NOT to override
-   technicals. Fetch CFTC Commitment of Traders data for the currencies in scope for the week. Focus
-   on the TFF (Traders in Financial Futures) report for FX pairs: large-speculator net positioning.
-   Interpret as follows:
-   - Extreme net-long (>90th pctl vs 1y): specs are crowded LONG → watch for long-squeeze risk;
-     bias toward fading rallies or tightening trailing stops on long trades.
-   - Extreme net-short (<10th pctl): mirror image — fade short setups if spec shorts are crowded.
-   - Mid-range: no COT signal; technicals dominate as usual.
-   COT data is free at `https://www.cftc.gov/dea/newcot/f_natfin.htm` (TFF report, Friday release).
+5. **Macro positioning layer (COT)** — use to colour directional bias, NOT to override technicals.
+   Run: `~/trading/bin/ftmo cot-update`
+   This downloads the CFTC Leveraged Money (hedge fund) net positioning for all major FX pairs
+   from cftc.gov, computes the 52-week percentile rank, and prints a ready-to-read summary.
+   Interpret the output:
+   - `crowded_long` (≥80th pctl): specs are piled long → squeeze risk; favour fading rallies or
+     tightening trail stops on long trades this week. Do NOT blindly short — it's a caution flag.
+   - `crowded_short` (≤20th pctl): mirror image — be cautious adding to short setups.
+   - `neutral`: no COT signal; technicals dominate as usual.
+   Note: COT is a weekly file released Friday ~15:30 ET. The launchd job runs this every Saturday
+   morning so the data is already fresh by Monday — no manual fetch needed.
+   If the command fails (network down), skip COT this week and note it in the Telegram message.
    Supplement with FXSSI order-book snapshot (`https://fxssi.com/current-ratio`) for intraday
-   buy/sell ratio context — use only as a tie-breaker when two setups score equally; don't use
-   it to override a strong technical setup.
-   Write 1-2 sentences per affected pair in the weekly plan Telegram message.
+   buy/sell ratio — use only as a tie-breaker when two setups are equally rated, never as a
+   primary signal.
 6. Telegram a concise **weekly plan**: key events by day + per-instrument bias & levels +
-   any COT/macro colour. Optionally ≤10 lines in journal.md. **Do NOT create Google Drive files.**
-   No trades this run.
+   COT colour for any pair with a non-neutral signal. Optionally ≤10 lines in journal.md.
+   **Do NOT create Google Drive files.** No trades this run.
