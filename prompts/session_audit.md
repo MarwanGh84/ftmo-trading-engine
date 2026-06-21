@@ -4,7 +4,9 @@ Goal: find at most one clean setup and let the engine execute it; manage open po
 
 **All engine commands use the wrapper `~/trading/bin/ftmo`. NEVER call cTrader MCP tools directly.**
 
-0. `~/trading/bin/ftmo shadow-stats` — one-line check: how many graded samples do we have and what is the current filtering edge (take win% − skip win%)? If n < 30, note it and proceed with extra caution — the edge is statistically unproven. This is context, not a blocker.
+0. **Pre-session context checks (read-only, 60 seconds):**
+   - `~/trading/bin/ftmo shadow-stats` — how many graded samples and current filtering edge (take − skip win%). If n < 30, note it; proceed with caution — edge is statistically unproven.
+   - `cat ~/trading/cot_bias.json` — check for any non-neutral COT signal on currencies in today's candidates. A `crowded_long` or `crowded_short` signal (≥80th / ≤20th percentile of leveraged money positioning) is a CAUTION FLAG, not a veto: avoid adding to an already-crowded direction, and tighten trail stops on positions running in the crowded direction. If the file doesn't exist yet, skip and proceed.
 1. `~/trading/bin/ftmo audit --report`. If cTrader unreachable, STOP. If kill-switch HIT,
    or trades_today (fills) ≥ 5, or poor_outcomes ≥ 2 → manage existing positions only, take no new entry,
    Telegram "limits reached — no new trades," and finish.

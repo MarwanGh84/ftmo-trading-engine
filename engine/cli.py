@@ -6,6 +6,7 @@ Subcommands:
   manage      move-to-BE / trail / partial-TP on an open position (never-widen guarded)
   eod         end-of-day summary; weekend/CB checks; report
   watchdog    lightweight -2% kill-switch check (for the 5-min launchd job)
+  unfreeze    lift an operational freeze (--force required for sticky/phase-target)
   cot-update  download CFTC TFF report; update macro bias cache (run Saturday)
 
 Run from ~/trading:  python3 -m engine.cli <subcommand> [...]
@@ -470,6 +471,36 @@ def cmd_shadow_stats(args) -> int:
     return 0
 
 
+def cmd_unfreeze(args) -> int:
+    """Lift an operational freeze. Sticky freezes (phase target, emergency) require --force.
+
+    Without --force: clears a routine freeze (e.g. cTrader unreachable, feed degraded).
+    With --force:    clears a sticky freeze — use after manually confirming the phase
+                     target / incident is resolved. Requires explicit human intent.
+    """
+    state = state_mod.load()
+    is_sticky = state.get("frozen_sticky", False)
+    reason = state.get("frozen_reason", "")
+
+    if not state.get("frozen"):
+        print("Not currently frozen — nothing to do.")
+        return 0
+
+    if is_sticky and not args.force:
+        print(f"Sticky freeze active: '{reason}'")
+        print("Use --force to override (confirm the phase target / incident is resolved first).")
+        return 1
+
+    state["frozen"] = False
+    state["frozen_reason"] = ""
+    state["frozen_sticky"] = False
+    state_mod.save(state)
+    msg = f"Freeze cleared{'  (--force)' if args.force else ''}. Reason was: '{reason}'"
+    print(msg)
+    telegram.send(f"🔓 {msg}")
+    return 0
+
+
 def cmd_cot_update(args) -> int:
     """Download the CFTC TFF report and update the local COT macro bias cache.
 
@@ -551,6 +582,11 @@ def main(argv=None) -> int:
     sg = sub.add_parser("shadow-grade"); sg.set_defaults(func=cmd_shadow_grade)
     sst = sub.add_parser("shadow-stats"); sst.add_argument("--report", action="store_true")
     sst.set_defaults(func=cmd_shadow_stats)
+
+    uf = sub.add_parser("unfreeze")
+    uf.add_argument("--force", action="store_true",
+                    help="clear a sticky freeze (phase target / emergency) — use with care")
+    uf.set_defaults(func=cmd_unfreeze)
 
     cot = sub.add_parser("cot-update")
     cot.add_argument("--report", action="store_true", help="also send result via Telegram")
