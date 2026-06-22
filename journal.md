@@ -297,3 +297,49 @@ open: flat
 
 ## EOD Review 2026-06-19 (Thursday) 20:07 Dubai
 Day: +$22.84 | 1 fill (GBPUSD sell) | 1 poor outcome (loss -$56.32) | account FLAT. Rails clean: news blackout enforced at 10:12 (engine refused), trade placed at 10:39 post-blackout; EURCHF/NZDJPY reduced to 0.25% risk after poor outcome ✓. Pending: EURCHF buy limit 0.923 (OID 161442244) expires 20:32 tonight — no weekend exposure risk; engine auto-flattens at 23:00. Lesson: GBPUSD placed 0.5% risk on GBP Retail Sales day — even outside the blackout, high-vol news days warrant 0.25% max.
+
+---
+
+## Weekly Plan 2026-W26 (Mon Jun 22) 08:00 Dubai
+Balance $10,077.25 (+0.77%) | Phase 1 | 2/4 min days | FLAT.
+Dominant theme: USD strength — EURUSD/GBPUSD/NZDUSD in D1 downtrends; USDJPY broke above 161.
+XAUUSD 4155 approaching major support 4100–4050; avoid fresh shorts near here.
+Event-heavy week: CAD CPI today 16:30, AUD CPI Wed 05:30, US Core PCE/GDP Thu 16:30 — flatten AUD ahead of Wed/Thu; size at 0.25% on any CAD/USD setup near events.
+COT skipped (SSL cert error on cftc.gov); shadow journal n=1 (no edge signal yet — keep logging every decision).
+
+## Morning Brief — 2026-06-22
+Audit clean: bal $10,077.25, daily room $201.55, overall $1,077.25, 0 positions. 3 blackout windows set: CAD CPI Tier-1 11:30–13:15 UTC; EUR Lagarde x2 12:45–13:15 & 15:10–15:40 UTC. No action until 11:00 London run.
+
+### 2026-06-22T11:07:52.292947+04:00
+PLACED: AUDUSD SELL 16000u (0.16 lots) | SL 30.0p TP 95.0p | risk $50.39 (0.5%) | R:R 3.17 | worst -$50.72 :: {"orderId": 161540779, "status": "placed"}
+
+## 2026-06-22 11:00 London Open Run
+AUDUSD sell-limit 0.7035 placed (order #161540779) — london_sweep_reversal, 0.16 lots, SL 0.7065, TP 0.6940, R:R 3.17. D1 trend_down + H4 resistance zone. Limit rests 31 pips above current 0.7004.
+Skipped USDJPY (at 20D high 161.808, no clean buy level), USDCAD (CAD CPI 11:30Z HIGH impact), EUR pairs (Lagarde 12:45Z/15:10Z). 14 of 17 pairs mid-range or news-locked. Shadow: 3 decisions logged (1 take, 2 skip).
+
+### 2026-06-22T13:39:51.304537+04:00
+PLACED: USDJPY BUY 12000u (0.12 lots) | SL 67.0p TP 118.0p | risk $50.39 (0.5%) | R:R 1.76 | worst -$51.05 :: {"text": "Invalid limitPrice: BUY limit must be below current ask (161.728). Use place_market_order for immediate execution, or place_stop_order for entries above the market."}
+
+### 2026-06-22 13:30 Dubai — Midday Run (London close, NY 4h out)
+USDJPY buy-stop 161.82 attempted (trend_up, 20D high breakout, R:R 1.76) — engine refused: limit orders above market not valid for buy. Buy-stop order type not in current proposal format. Flag for 16:33 NY run.
+AUDUSD sell-limit 0.7035 (#161540779) still valid. USDCAD/USDCHF/NZDUSD/NZDJPY skipped (news risk or range). Shadow: 4 logged (1 take/refused, 3 skip).
+
+### 2026-06-22T16:42:27.759699+04:00
+PLACED: USDJPY BUY 18000u (0.18 lots) | SL 45.0p TP 90.0p | risk $50.39 (0.5%) | R:R 2.00 | worst -$52.09 :: {"orderId": 161586319, "status": "placed"}
+
+## 2026-06-22 16:33 Dubai (NY overlap)
+USDJPY buy-limit 161.60 placed (#161586319) — 0.18 lots, SL 161.15, TP 162.50, R:R 2.0. D1 trend_up + H4 higher lows 161.195→161.433→161.609. AUDUSD sell-limit #161540779 at 0.7035 remains active (thesis intact).
+EUR pairs skipped — ECB Lagarde blackout 12:30–13:00Z and 14:55–15:25Z. Range pairs (NZDUSD/NZDJPY) skipped, insufficient confluence.
+
+### 2026-06-22T18:53:45.876472+04:00
+CLOSED USDJPY #54894314 LOSS net $-54.19 poor=True
+
+## EOD 2026-06-22
+🌙 EOD — bal $10023.06 | day P/L $-54.19 | trades 1 | poor 1
+open: flat
+
+### EOD Review 2026-06-22
+Rail check PASS: USDJPY fill had SL at entry, 0.5% risk, R:R 2.0, 2 confluences (D1 trend_up + H4 higher lows). 1 poor outcome today → reduce to 0.25% risk per trade tomorrow.
+AUDUSD sell-limit #161540779 auto-expired (price 0.6997 at EOD, never reached 0.7035 — correct patience; relist Tuesday if thesis holds).
+Lesson: USDJPY near 20D high 161.808 reversed sharply in NY session; buying near multi-week highs with only R:R 2.0 is marginal — prefer R:R ≥2.5 at range extremes or wait for a confirmed breakout candle.
+Shadow journal n=12 (2 graded); sample too small for edge signal — keep logging every decision.

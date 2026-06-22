@@ -128,8 +128,10 @@ def ensure_subscribed(client) -> list:
 
 
 def _within_hours() -> bool:
-    h = state_mod.now_dubai().hour
-    return config.SCAN_HOURS_DUBAI[0] <= h < config.SCAN_HOURS_DUBAI[1]
+    now = state_mod.now_dubai()
+    if now.weekday() >= 5:   # 5=Saturday, 6=Sunday — markets closed, no alerts
+        return False
+    return config.SCAN_HOURS_DUBAI[0] <= now.hour < config.SCAN_HOURS_DUBAI[1]
 
 
 def scan(client, state: dict) -> list[str]:
