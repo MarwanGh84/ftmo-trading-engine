@@ -343,3 +343,27 @@ Rail check PASS: USDJPY fill had SL at entry, 0.5% risk, R:R 2.0, 2 confluences 
 AUDUSD sell-limit #161540779 auto-expired (price 0.6997 at EOD, never reached 0.7035 — correct patience; relist Tuesday if thesis holds).
 Lesson: USDJPY near 20D high 161.808 reversed sharply in NY session; buying near multi-week highs with only R:R 2.0 is marginal — prefer R:R ≥2.5 at range extremes or wait for a confirmed breakout candle.
 Shadow journal n=12 (2 graded); sample too small for edge signal — keep logging every decision.
+
+## Morning Brief 2026-06-23
+Bal $10023.06 | room $200.46 daily / $1023.06 overall | flat (0 positions, 0 orders).
+5 news windows set (EUR Flash PMIs 06:45–08:00Z, GBP Flash PMI 08:00–09:00Z, BOC Macklem 13:10–13:40Z, USD Flash PMI 13:15–14:15Z).
+No high-impact events; all medium. Prior poor outcome → risk capped 0.25% today. Next run 11:00 London.
+
+### 2026-06-23T11:08:16.001825+04:00
+PLACED: AUDUSD SELL 20000u (0.20 lots) | SL 24.0p TP 78.0p | risk $50.12 (0.5%) | R:R 3.25 | worst -$51.60 :: {"orderId": 161716276, "status": "placed"}
+
+## 2026-06-23 11:00 Dubai — London Open Run
+Placed AUDUSD sell limit 0.6978 (SL 0.7002, TP 0.6900, R:R 3.25). D1 trend_down + 20D low break. EUR PMI active now (news bounce could fill the retest). Skipped USDCHF/USDJPY (both at 20D highs, no clean pullback entry). GBPUSD/EUR pairs news-locked.
+
+## 2026-06-23 13:30 Dubai — Midday Run (London continuation / pre-NY)
+No new trade. AUDUSD sell limit #161716276 at 0.6978 still pending (price now 0.6952, H4 remains bearish — thesis intact). EURJPY and AUDJPY both at 20D range lows (183.975 / 112.032) but skipped: German Services PMI miss (46.8 vs 49.0) already drove EUR lower; H4 bearish momentum active; range regime requires extra confluence not present. USD+CAD PMI/BOC news 17:25-17:45 Dubai blocks USD/CAD pairs. Shadow-logged both as skips (n=17 total). Note: engine has no outbound Telegram command for no-trade runs.
+
+## 2026-06-23 16:33 Dubai — NY Overlap Run (HALTED)
+cTrader bridge unreachable — connection refused on port 9876, unreachable_streak=9, engine frozen. STOP per constitution: no new trades, no order management. AUDUSD sell limit #161716276 at 0.6978 status unknown (cannot verify). No action taken this session. Check that the cTrader bridge process is running and restart if needed before next session.
+
+## EOD 2026-06-23
+🌙 EOD — bal $10023.06 | day P/L $0.00 | trades 0 | poor 0
+open: flat
+
+### EOD Review 2026-06-23
+Bal $10,023.06 | day P/L $0.00 | 0 fills | flat. AUDUSD sell limit #161716276 at 0.6978 (R:R 3.25, D1 trend_down) placed at London open, did not fill — price moved to 0.6952 at midday without retesting entry level. Bridge was unreachable during NY overlap (streak=9 at 16:33); recovered by EOD (streak=0). Order still in state.json as pending — engine will reconcile on next morning run. Shadow: 17 logged, 3 graded, filtering edge +100 pts (sample too small). Lesson: bridge down mid-session → monitor cTrader process health before NY run.
