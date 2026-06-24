@@ -367,3 +367,44 @@ open: flat
 
 ### EOD Review 2026-06-23
 Bal $10,023.06 | day P/L $0.00 | 0 fills | flat. AUDUSD sell limit #161716276 at 0.6978 (R:R 3.25, D1 trend_down) placed at London open, did not fill — price moved to 0.6952 at midday without retesting entry level. Bridge was unreachable during NY overlap (streak=9 at 16:33); recovered by EOD (streak=0). Order still in state.json as pending — engine will reconcile on next morning run. Shadow: 17 logged, 3 graded, filtering edge +100 pts (sample too small). Lesson: bridge down mid-session → monitor cTrader process health before NY run.
+
+---
+
+## 2026-06-24 | Morning Brief | 09:30 Dubai (05:30 UTC)
+Bal $10,023.06 | daily room $200.46 | overall room $1,023.06 | 0 fills | 1 pending (AUDUSD sell limit 0.6978).
+AUD CPI 01:30 UTC released: y/y 4.0% (miss) + m/m -0.7% (miss) → slight AUD weakness supports pending SELL. No remaining HIGH events today.
+Blackout published: AUD 00:30–02:15 UTC (passed). Next run: 11:00 London.
+
+### 2026-06-24T10:18:38.482767+04:00
+PLACED: USDCAD BUY 12000u (0.12 lots) | SL 58.0p TP 117.0p | risk $50.12 (0.5%) | R:R 2.02 | worst -$50.54 :: {"orderId": 161888244, "status": "placed"}
+
+## 2026-06-24 11:00 Dubai — London Open
+USDCAD buy limit 1.4193/SL 1.4135/TP 1.4310 placed (order 161888244). D1 uptrend, Jun23 NY breakout above 20D high 1.41933; H1 overnight consolidation above 1.4200 confirms support.
+AUDJPY/EURJPY skipped (range regime). AUDUSD sell limit 0.6978 still pending at 0.6916 current price. n=17 shadow logs, 3 graded — edge unproven, operating conservatively.
+
+
+## 2026-06-24 11:00 London run — ABORTED
+cTrader bridge reachable but unauthenticated ("No active trading account detected").
+Audit crashed KeyError:'balance'; no live data available. Zero new trades placed.
+Action required: log in to cTrader to restore session before next run.
+
+### 2026-06-24T13:41:44.508958+04:00
+REFUSED XAUUSD sell: aggregate_risk: aggregate (open+pending+new) risk 1.47% > 1.0%
+
+### 2026-06-24T13:42:57.545869+04:00
+PLACED: XAUUSD SELL 1u (0.01 lots) | SL 40.0p TP 72.0p | risk $50.12 (0.5%) | R:R 1.80 | worst -$41.89 :: {"orderId": 161921078, "status": "placed"}
+
+## 2026-06-24 13:30 Dubai (midday run)
+Cancelled AUDUSD sell limit 161716276 (stale: 85p from fill, H4 bounces declining). Placed XAUUSD sell limit 161921078 at 4095 (SL 4135, TP 4023, R:R 1.80). USDCAD buy limit 161888244 at 1.4193 retained — 41p from fill, thesis intact. Account $10,023.06, 0 fills today, 2 pending (USDCAD + XAUUSD).
+
+## 2026-06-24 16:34 +04 — 16:33 NY run — cTrader UNREACHABLE
+Audit failed: MCP bridge at 127.0.0.1:9876 timed out after 3 attempts.
+No trade taken. No analysis performed. Session aborted per constitution rule.
+
+## EOD 2026-06-24
+🌙 EOD — bal $10023.06 | day P/L $0.00 | trades 0 | poor 0
+open: flat
+Review: 0 fills; XAUUSD sell + USDCAD buy limits expired without triggering — price didn't reach levels.
+16:33 run aborted (cTrader bridge timeout); no lapse in risk rails since account was flat.
+Shadow edge +57 pts (2 takes 100% win, 7 skips 43% win) — directional but N=9 too small to trust.
+Lesson: bridge instability at 16:33 is a recurring gap — consider checking bridge health pre-run.
