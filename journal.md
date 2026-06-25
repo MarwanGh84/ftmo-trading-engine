@@ -408,3 +408,30 @@ Review: 0 fills; XAUUSD sell + USDCAD buy limits expired without triggering — 
 16:33 run aborted (cTrader bridge timeout); no lapse in risk rails since account was flat.
 Shadow edge +57 pts (2 takes 100% win, 7 skips 43% win) — directional but N=9 too small to trust.
 Lesson: bridge instability at 16:33 is a recurring gap — consider checking bridge health pre-run.
+
+## Morning Brief 2026-06-25
+USD cluster (PCE+GDP+Claims) at 12:30Z → blackout 12:00–13:00Z (16:00–17:00 Dubai).
+AUD Employment passed cleanly at 01:30Z (actual beat). Account flat, no positions.
+
+### 2026-06-25T11:08:47.802418+04:00
+PLACED: GBPAUD SELL 26000u (0.26 lots) | SL 27.0p TP 100.0p | risk $50.12 (0.5%) | R:R 3.70 | worst -$53.22 :: {"orderId": 162096563, "status": "placed"}
+
+## 2026-06-25 11:00 Dubai — London Open Run
+PLACED: GBPAUD sell-limit 1.91350 SL 1.91620 TP 1.90350 (0.26 lots, R:R 3.7) — second test of 20D high 1.91396 double-top; H4 rejection Jun 24; AUD employment beat 40.3K adds fundamental tailwind. Order ID 162096563.
+SKIPPED: CADJPY sell — trend_down but at 20D support 113.518 with 17h consolidation; timing poor for short entry.
+USD news (Core PCE + GDP) at 12:30 UTC; GBPAUD not affected (no USD). Scanning 17 pairs; 14 assessed, 3 non-candidates mid-range.
+
+## 2026-06-25 13:30 Dubai — London Midday / Pre-NY Run
+NO NEW ENTRY. CADJPY + NZDJPY shortlisted (trend_down, 20D lows), both SKIPPED: bounces from 113.518 / 91.06 lows too fresh (≤25 pips), no H4 resistance established for sell limit. USD Core PCE + GDP at 12:30Z (3h) adds JPY volatility. Shadow logged both. GBPAUD sell pos +$6.18 + limit at 1.9135 auto-managed. Next: 16:33 NY run (post-news clarity expected).
+
+### 2026-06-25T16:31:16.171326+04:00
+CLOSED GBPAUD #55112911 SCRATCH net $0.24 poor=False
+
+## 2026-06-25 16:33 Dubai — NY Overlap Run
+NO NEW ENTRY. GDP 2.1% (vs 1.6% fcst) + Claims 215K (vs 225K) = very USD-bullish, but moves already in extension pre-NY (GBPUSD pullback at 1.3196 passed 3h early; XAUUSD sizing floor at 0.25% risk). 17 pairs scanned: all USD majors in extension, JPY/EUR/GBP crosses mid-range. GBPAUD sell-limit 1.9135 (engine-placed, 21 pips away, R:R 3.7) left live. Shadow logged GBPUSD skip + XAUUSD skip.
+
+## EOD 2026-06-25
+🌙 EOD — bal $10,023.06 | day P/L ~$0.24 (GBPAUD scratch) | fills 0 | poor 0
+Open: FLAT | cTrader bridge UNREACHABLE at 20:00 (eod --report timed out; 3rd late-run bridge failure this week)
+Shadow: edge +50 pts (3 takes 100% win, 8 skips 50% win, N=11 graded — directional but unproven)
+Lesson: bridge drops consistently on 16:33 and 20:00 runs — restart cTrader desktop app before NY session to resolve.
