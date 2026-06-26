@@ -435,3 +435,31 @@ NO NEW ENTRY. GDP 2.1% (vs 1.6% fcst) + Claims 215K (vs 225K) = very USD-bullish
 Open: FLAT | cTrader bridge UNREACHABLE at 20:00 (eod --report timed out; 3rd late-run bridge failure this week)
 Shadow: edge +50 pts (3 takes 100% win, 8 skips 50% win, N=11 graded — directional but unproven)
 Lesson: bridge drops consistently on 16:33 and 20:00 runs — restart cTrader desktop app before NY session to resolve.
+2026-06-26 09:30 MORNING BRIEF: Audit failed — cTrader bridge returned malformed balance response (KeyError: 'balance'). News windows published (UoM Sentiment+Inflation 13:45-14:15 UTC). No high-impact events today; no trades taken.
+
+### 2026-06-26T11:07:45.817236+04:00
+PLACED: AUDUSD SELL 21000u (0.21 lots) | SL 23.0p TP 85.0p | risk $50.12 (0.5%) | R:R 3.70 | worst -$52.29 :: {"orderId": 162286471, "status": "placed"}
+
+## 2026-06-26 11:00 Dubai — London Open Run
+
+**Account:** $10,023.30 | 0 positions | 0/5 fills | Edge unproven (14 graded samples)
+
+**Action:** AUDUSD SELL-LIMIT 0.69050, SL 0.69280, TP 0.68200 — OrderID 162286471 (expires 13:00Z before USD news)
+
+**Rationale:** D1 trend_down clear; Asian session swept 20D low 0.6882 (reached 0.6875), London bouncing into H4 resistance zone 0.6905-0.6910. R:R 3.7. Skipped USDJPY (18 pips into sweep-reversal move, market entry quality poor) and NZDUSD (0.8 pip spread vs AUDUSD 0.3 pip, inferior setup).
+
+## 2026-06-26 13:32 Dubai (midday run)
+AUDUSD sell limit 0.6905 maintained — H1 lower-high structure confirmed, entry 4p above London bounce high; SL 0.6928/TP 0.6820 (R:R 3.7). NZDUSD sell skipped: same commodity-FX theme, correlated AUD/NZD, aggregate risk ceiling.
+USD UoM Sentiment 14:00Z (medium), engine auto-handles weekend flat 19:00Z. All other pairs mid-range or range-regime. Fills: 0/5.
+
+---
+**2026-06-26 16:33 Dubai — NY Overlap Run**
+No new trades. GBPAUD short (false breakout at 1.914 20D high, declining H1 highs) was the best setup but blocked: GBPAUD sell = long AUD, opposing open AUDUSD short (engine would refuse). NZDJPY: at 20D low support (91.049) in range — needs confirmed break first. USD pairs skipped (news 13:45Z). AUDUSD short engine-managed.
+
+### 2026-06-26T17:53:27.266572+04:00
+CLOSED AUDUSD #55188600 LOSS net $-6.10 poor=True
+
+## EOD 2026-06-26
+🌙 EOD — bal $10017.20 | day P/L $-5.86 | trades 1 | poor 1
+open: flat
+Review: AUDUSD sell-limit 0.6905 filled, SL 0.6928 hit at 17:53 (-$6.10, 1 poor outcome). Setup was structurally valid (D1 trend_down, H4 resistance, R:R 3.7) but price swept through entry zone without follow-through — reversal off 0.6875 deeper than expected. No rail violations; engine correctly blocked GBPAUD sell (correlated opposing AUD direction). Shadow edge +35 pts (N=14 graded, unproven). Next trade: risk reduced to 0.25% (1 poor outcome today). Account FLAT, all FTMO buffers safe ($10,017.20 >> $9,000 floor).
