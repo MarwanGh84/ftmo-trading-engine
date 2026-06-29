@@ -4,6 +4,7 @@ If they disagree, cTrader is the source of truth: we overwrite state and flag th
 discrepancy so the caller can Telegram-alert it.
 """
 from __future__ import annotations
+import time
 
 from . import config
 from . import state as state_mod
@@ -92,7 +93,13 @@ def detect_closures(state: dict, old_by_id: dict, new_ids: set, client: McpClien
         items = hist if isinstance(hist, list) else (
             hist.get("history") or hist.get("trades") or hist.get("orders") or [])
     except Exception:
-        items = []
+        try:
+            time.sleep(2)
+            hist = client.call("get_order_history")
+            items = hist if isinstance(hist, list) else (
+                hist.get("history") or hist.get("trades") or hist.get("orders") or [])
+        except Exception:
+            items = []
     scratch_thr = _scratch_threshold(state)
     closures = []
     for pid in vanished:

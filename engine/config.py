@@ -27,7 +27,7 @@ WATCHLIST_NAME = "FTMO"   # cTrader watchlist the engine keeps populated so quot
 TZ = "Asia/Dubai"  # UTC+4, operator local time; daily resets keyed to this
 
 # ---- cTrader MCP endpoint ------------------------------------------------
-MCP_URL = "http://127.0.0.1:9876/mcp/"
+MCP_URL = os.getenv("MCP_URL", "http://127.0.0.1:9876/mcp/")
 MCP_PROTOCOL = "2025-06-18"
 ACCOUNT_CCY = "USD"
 
@@ -87,6 +87,8 @@ SCAN_TREND_MIN_ATR = 1.0         # SMA20 must move >= this many ATRs over the lo
                                  # real TREND (else RANGE) — a slope-based filter, steadier than bias
 SCAN_TREND_REGIME_ONLY = True    # gate pings on a trending regime aligned with the level (support needs
                                  # trend_down, resistance needs trend_up) — drops touches in chop/ranges
+SCAN_MIN_VIABLE_STOP_PIPS = 5   # suppress Telegram alert when price is within this many pips of the level
+                                 # (geometry too tight for a meaningful stop placement)
 # ---- Shadow journal (graded would-have outcomes — measures the filtering edge) -----
 SHADOW_EXPIRY_HOURS = 168        # an ungraded candidate auto-closes as "expired" after this long (1 week)
 RETRY_MAX = 3                    # tool-call retry ceiling (order placement uses retries=1)

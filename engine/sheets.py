@@ -45,9 +45,9 @@ def enabled() -> bool:
                and Path(config.google_sa_json()).exists())
 
 
-def _spreadsheet():
+def _spreadsheet(force_refresh: bool = False):
     global _ss_cache
-    if _ss_cache is not None:
+    if _ss_cache is not None and not force_refresh:
         return _ss_cache
     creds = Credentials.from_service_account_file(config.google_sa_json(), scopes=_SCOPES)
     gc = gspread.authorize(creds)
@@ -373,6 +373,19 @@ def _append(tab: str, row: list) -> bool:
         ws = _spreadsheet().worksheet(tab)
         ws.append_row([str(c) for c in row], value_input_option="USER_ENTERED")
         return True
-    except Exception as e:
-        _log(f"{tab} append EXC {e}")
-        return False
+    except Exception:
+        # Auth token may have expired; clear cache and retry once with fresh credentials.
+        global _ss_cache
+        _ss_cache = None
+        try:
+            ws = _spreadsheet(force_refresh=True).worksheet(tab)
+            ws.append_row([str(c) for c in row], value_input_option="USER_ENTERED")
+            return True
+        except Exception as e2:
+            _log(f"{tab} append EXC (after retry) {e2}")
+            try:
+                from . import telegram as _tg
+                _tg.send(f"⚠️ Sheets auth failed — audit trail not updating. {e2}")
+            except Exception:
+                pass
+            return False

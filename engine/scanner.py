@@ -12,6 +12,7 @@ from urllib.request import urlopen
 from . import config, telegram, sheets
 from . import state as state_mod
 from . import shadow
+from . import chart_overlay
 
 
 def _now_iso() -> str:
@@ -185,18 +186,23 @@ def scan(client, state: dict) -> list[str]:
         else:
             aligned = bool(near)
         worth_alert = bool(near) and aligned
-        # Time-cooldown de-dupe: don't re-ping the same symbol+level within the cooldown, even if
-        # price oscillates in and out of the band. Only touch the record when we actually alert,
-        # so the cooldown clock persists across band re-entries.
-        key = near or "none"
+        # B3 + B6: compute level distance before the alert decision.
+        _pip = d.get("pipSize") or 0.0001
+        _level = (lv.get("recent_low") if near == "support"
+                  else lv.get("recent_high") if near == "resistance" else None)
+        _dist = abs(price - _level) / _pip if (near and _level) else None
+        # B6: suppress Telegram when price is so close to the level that stop placement geometry
+        # is degenerate (less than MIN_VIABLE pips of room). Still updates the Sheet row via rows[].
+        _too_close = _dist is not None and _dist < config.SCAN_MIN_VIABLE_STOP_PIPS
+        # B3: include the level price in the cooldown key so different price levels at the same
+        # near-type get independent cooldowns (a new 20D low after a break gets its own window).
+        key = f"{near}:{round(_level, 4)}" if (near and _level) else (near or "none")
         last = alerts_state.get(sym)
         last = last if isinstance(last, dict) else {}
         recent = last.get("key") == key and _mins_since(last.get("ts")) < config.SCAN_ALERT_COOLDOWN_MIN
-        if worth_alert and not recent:
-            pip = d.get("pipSize") or 0.0001
-            level = lv.get("recent_low") if near == "support" else lv.get("recent_high")
-            dist = abs(price - level) / pip if level else 0
-            loc = "AT level" if dist <= 3 else f"{dist:.0f}p {'above' if price > level else 'below'}"
+        if worth_alert and not recent and not _too_close:
+            loc = ("AT level" if (_dist or 0) <= 3
+                   else f"{_dist:.0f}p {'above' if price > _level else 'below'}")
             alerts.append(f"{sym} [{bias} · {_RLABEL.get(regime, regime)}] — {note} (px {price:.5f}, {loc})")
             alerts_state[sym] = {"key": key, "ts": _now_iso()}
 
@@ -208,6 +214,19 @@ def scan(client, state: dict) -> list[str]:
     sheets.update_watchlist(rows)
     for a in alerts:
         telegram.send(f"👀 Watch: {a}")
+
+    # Chart overlays: sync level lines + notify in cTrader (fail-safe)
+    try:
+        chart_overlay.sync_scanner_levels(client, candidates, cache)
+        if alerts:
+            chart_overlay.notify(
+                client,
+                f"👀 Scanner: {len(alerts)} alert(s)",
+                "\n".join(a[:100] for a in alerts[:3]),
+                "info",
+            )
+    except Exception:
+        pass
 
     # Grade any open shadow candidates (would-have outcomes) — free here, no Claude cost.
     try:

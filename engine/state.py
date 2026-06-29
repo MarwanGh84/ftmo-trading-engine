@@ -107,12 +107,21 @@ def _ftmo_date(iso: str | None) -> str | None:
 
 
 def load() -> dict:
-    if not config.STATE_FILE.exists():
-        return dict(_SCHEMA)
-    data = json.loads(config.STATE_FILE.read_text())
-    for k, v in _SCHEMA.items():
-        data.setdefault(k, v.copy() if isinstance(v, (list, dict)) else v)
-    return data
+    backup = config.STATE_FILE.with_suffix(".backup")
+    for candidate in (config.STATE_FILE, backup):
+        if not candidate.exists():
+            continue
+        try:
+            data = json.loads(candidate.read_text())
+            if candidate == backup:
+                from . import telegram as _tg
+                _tg.send("⚠️ state.json was corrupt — recovered from state.json.backup")
+            for k, v in _SCHEMA.items():
+                data.setdefault(k, v.copy() if isinstance(v, (list, dict)) else v)
+            return data
+        except Exception:
+            continue
+    return dict(_SCHEMA)
 
 
 def save(state: dict) -> None:
@@ -122,6 +131,16 @@ def save(state: dict) -> None:
     try:
         with os.fdopen(fd, "w") as f:
             json.dump(state, f, indent=2, sort_keys=True)
+        # Keep a backup copy before atomically replacing the live file.
+        if config.STATE_FILE.exists():
+            backup = config.STATE_FILE.with_suffix(".backup")
+            try:
+                bfd, btmp = tempfile.mkstemp(dir=str(config.ROOT), suffix=".state.bak.tmp")
+                with os.fdopen(bfd, "w") as bf:
+                    bf.write(config.STATE_FILE.read_text())
+                os.replace(btmp, backup)
+            except Exception:
+                pass   # backup failure must never block the live write
         os.replace(tmp, config.STATE_FILE)   # atomic on POSIX
     finally:
         if os.path.exists(tmp):

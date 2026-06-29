@@ -19,6 +19,7 @@ from datetime import datetime, timezone, timedelta
 
 from . import config, risk, telegram, sheets
 from . import state as state_mod
+from . import chart_overlay
 from .mcp_client import McpClient, requests_used_today
 from .reconcile import reconcile
 from . import execute as execute_mod
@@ -128,16 +129,31 @@ def cmd_audit(args) -> int:
     state = state_mod.load()
     snap = _account_snapshot(client, state)
     state_mod.save(state)
-    text = (f"📊 Audit — bal ${snap['balance']:.2f} | eq ${snap['equity']:.2f} | "
-            f"day P/L ${snap['daily_pnl']:.2f}\n"
-            f"daily room ${snap['daily_room']:.2f} (−2%) | overall room ${snap['overall_room']:.2f}\n"
-            f"positions {snap['open_positions']} | pending {snap['pending_orders']} | "
-            f"trades today {snap['trades_today']}/{config.MAX_TRADES_PER_DAY} | "
-            f"poor {snap['poor_outcomes']}/{config.MAX_POOR_OUTCOMES}\n"
-            f"kill-switch {'HIT' if snap['daily_limit_hit'] else 'ok'} | "
-            f"MCP requests {snap['requests_used']}/{config.REQUEST_CAP_PER_DAY} | "
-            f"ARMED={config.is_armed()}")
+    now_s = state_mod.now_dubai().strftime("%H:%M")
+    pnl_s = telegram._net_str(snap["daily_pnl"])
+    kill_s = "🔴 HIT" if snap["daily_limit_hit"] else "✅"
+    bal_s   = telegram.code(f"${snap['balance']:.2f}")
+    eq_s    = telegram.code(f"${snap['equity']:.2f}")
+    droom_s = telegram.code(f"${snap['daily_room']:.2f}")
+    oroom_s = telegram.code(f"${snap['overall_room']:.2f}")
+    trd_s   = telegram.code(f"{snap['trades_today']}/{config.MAX_TRADES_PER_DAY}")
+    poor_s  = telegram.code(f"{snap['poor_outcomes']}/{config.MAX_POOR_OUTCOMES}")
+    mcp_s   = telegram.code(f"{snap['requests_used']}/{config.REQUEST_CAP_PER_DAY}")
+    armed_s = "✅ live" if config.is_armed() else "🟡 disarmed"
+    text = (f"📊 <b>Audit — {now_s} Dubai</b>\n"
+            f"Balance {bal_s}  ·  Equity {eq_s}  ·  P/L {telegram.code(pnl_s)}\n"
+            f"Daily room {droom_s}  ·  Overall room {oroom_s}\n"
+            f"Open {telegram.code(snap['open_positions'])}  ·  "
+            f"Pending {telegram.code(snap['pending_orders'])}  ·  "
+            f"Trades {trd_s}  ·  Poor {poor_s}\n"
+            f"Kill-switch {kill_s}  ·  MCP {mcp_s}  ·  ARMED {armed_s}")
     execute_mod.report_closures(snap["discrepancy"].get("closures", []))
+    try:
+        chart_overlay.clear_closed_brackets(client, snap["discrepancy"].get("closures", []))
+        if args.report:
+            chart_overlay.setup_session_charts(client, state)
+    except Exception:
+        pass
     if snap["discrepancy"]["changed"]:
         text += f"\n🔄 reconciled: {snap['discrepancy']['summary']}"
     sheets.update_dashboard(snap)
@@ -208,12 +224,15 @@ def cmd_watchdog(args) -> int:
     except Exception as e:
         # Fail closed: after N consecutive unreachable cycles, FREEZE new entries.
         state["unreachable_streak"] = state.get("unreachable_streak", 0) + 1
-        if (state["unreachable_streak"] >= config.UNREACHABLE_FREEZE_CYCLES
-                and state_mod.freeze(state, f"cTrader unreachable {state['unreachable_streak']} cycles")):
-            telegram.send(f"🧊 FROZEN — cTrader unreachable {state['unreachable_streak']}x. "
-                          f"No new entries until it recovers. Broker-side stops still protect open trades.")
+        streak = state["unreachable_streak"]
+        if streak >= config.UNREACHABLE_FREEZE_CYCLES:
+            state_mod.freeze(state, f"cTrader unreachable {streak} cycles")
+            if streak == config.UNREACHABLE_FREEZE_CYCLES:
+                # Alert exactly once when first hitting the threshold (not on every subsequent cycle).
+                telegram.send(f"🧊 <b>FROZEN — cTrader unreachable {streak}× ({streak * 5} min)</b>\n"
+                              f"No new entries until it recovers. Broker-side stops still protect open trades.")
         state_mod.save(state)
-        print(f"watchdog: unreachable streak {state['unreachable_streak']}: {e}")
+        print(f"watchdog: unreachable streak {streak}: {e}")
         return 0
     balance, equity = float(bal["balance"]), float(bal["equity"])
     # Reachable again — clear the streak and lift a connectivity freeze.
@@ -221,7 +240,7 @@ def cmd_watchdog(args) -> int:
         state["unreachable_streak"] = 0
         if state.get("frozen") and state.get("frozen_reason", "").startswith("cTrader unreachable"):
             if state_mod.unfreeze(state):
-                telegram.send("✅ Recovered — cTrader reachable again; freeze lifted.")
+                telegram.send("✅ <b>Recovered</b> — cTrader reachable again, freeze lifted.")
     state_mod.apply_daily_reset(state, balance, equity)
 
     # 1. Kill-switch FIRST (the one thing that must always run). Guard against a transient bad/zero
@@ -232,48 +251,106 @@ def cmd_watchdog(args) -> int:
     equity_plausible = equity > 0 and balance > 0 and equity >= balance * 0.5
     if equity_plausible and equity <= floor and not state.get("daily_limit_hit"):
         state["daily_limit_hit"] = True
-        telegram.send(f"🚨 KILL-SWITCH: equity ${equity:.2f} hit −{config.DAILY_LOSS_LIMIT_PCT}% "
-                      f"floor ${floor:.2f}. NO new trades today. Existing stops remain.")
+        telegram.send(f"🚨 <b>KILL-SWITCH</b>\n"
+                      f"Equity {telegram.code(f'${equity:.2f}')} hit −{config.DAILY_LOSS_LIMIT_PCT}% "
+                      f"floor {telegram.code(f'${floor:.2f}')} — no new trades today.")
+        try:
+            chart_overlay.notify(
+                client,
+                "🚨 KILL-SWITCH",
+                f"−{config.DAILY_LOSS_LIMIT_PCT}% floor hit — closing all engine positions",
+                "error",
+            )
+        except Exception:
+            pass
+        flat_notes, flat_failed = trade_manager.emergency_flat(state)
+        if flat_notes or flat_failed:
+            lines = [f"  {telegram.esc(n)} ✓" for n in flat_notes]
+            lines += [f"  {telegram.esc(f)} ✗" for f in flat_failed]
+            status = "partial" if flat_failed else f"{len(flat_notes)} closed"
+            telegram.send(f"⏹ <b>Kill-switch flatten — {status}</b>\n" + "\n".join(lines))
+        if flat_failed:
+            state_mod.freeze(state, "kill-switch flatten failed — manual close required", sticky=True)
+            telegram.send(f"🛑 <b>FROZEN</b> — kill-switch flatten failed.\n"
+                          f"Close manually in cTrader: {telegram.esc(', '.join(flat_failed))}")
     # Phase target reached + min trading days -> sticky freeze (protect the pass, await next account).
     if guards.phase_target_reached(state, equity, balance=balance) and not state.get("frozen_sticky"):
         state_mod.freeze(state, "phase target reached + min trading days — protect the pass; "
                          "await the next account and re-arm manually", sticky=True)
-        telegram.send("🏁 PHASE TARGET REACHED — froze new trades to protect the pass. "
+        telegram.send("🏁 <b>Phase target reached</b> — new trades frozen to protect the pass.\n"
                       "Await the next FTMO account, then follow SWITCH_ACCOUNT.md to re-arm.")
     state_mod.save(state)   # persist the flag even if the steps below fail on cap/connectivity
 
     # 2. Best-effort reconcile + closures + active management (may skip if cap/conn fails).
     notes = []
     try:
+        # A3. Snapshot pre-reconcile engine state so we can detect crash-recovery vs normal fills.
+        _old_eng_pos = [p for p in state.get("open_positions", []) if p.get("label") == config.MANAGE_LABEL]
+        _old_eng_ord = [o for o in state.get("pending_orders", []) if o.get("label") == config.MANAGE_LABEL]
         disc = reconcile(state, client)
         execute_mod.report_closures(disc.get("closures", []))
+        try:
+            chart_overlay.clear_closed_brackets(client, disc.get("closures", []))
+        except Exception:
+            pass
+        # A3 alert: engine was fully flat in state but broker has engine positions — crash recovery.
+        # Not triggered by normal fills (pending order existed = we knew about it) or normal operation.
+        if not _old_eng_pos and not _old_eng_ord:
+            appeared_engine = [p for p in state.get("open_positions", [])
+                               if p.get("label") == config.MANAGE_LABEL]
+            if appeared_engine:
+                syms = ", ".join(f"{p.get('symbol')} #{p.get('id')}" for p in appeared_engine)
+                telegram.send(f"⚠️ <b>Startup reconcile</b> — state was flat but broker has "
+                              f"{len(appeared_engine)} engine position(s).\n"
+                              f"{telegram.esc(syms)}\nRecovered. Verify no duplicate risk.")
         # Fail-closed: an engine position with no broker stop is emergency-closed + sticky freeze.
         for pid in trade_manager.unprotected_position_ids(state):
             manage_mod.close_position(pid)
             state_mod.freeze(state, f"engine position #{pid} had no broker stop", sticky=True)
-            telegram.send(f"🛑 EMERGENCY: position #{pid} had NO stop — closed + froze new entries.")
+            telegram.send(f"🛑 <b>EMERGENCY</b> — position {telegram.code(f'#{pid}')} had no stop.\n"
+                          f"Emergency closed + sticky freeze. Verify cTrader settings.")
         # Trade-age guard: force-exit forgotten positions.
         for pid in guards.trade_age_violations(state, datetime.now(timezone.utc)):
             manage_mod.close_position(pid)
-            telegram.send(f"⏱ Force-exit #{pid} — open > {config.MAX_TRADE_AGE_HOURS}h (trade-age cap).")
+            telegram.send(f"⏱ Force-exit {telegram.code(f'#{pid}')} — "
+                          f"open > {config.MAX_TRADE_AGE_HOURS}h (trade-age cap).")
         # Auto-clearing freeze: unknown/manual positions (recomputed each cycle).
         if not state.get("frozen_sticky"):
             reason = guards.auto_freeze_reason(state)
             if reason:
                 if state_mod.freeze(state, reason):
-                    telegram.send(f"🧊 FROZEN — {reason}. No new entries until cleared.")
+                    telegram.send(f"🧊 <b>Frozen</b> — {telegram.esc(reason)}\nNo new entries until cleared.")
             elif state.get("frozen"):
                 if state_mod.unfreeze(state):
-                    telegram.send("✅ Unfroze — operational condition cleared.")
+                    telegram.send("✅ <b>Unfrozen</b> — operational condition cleared.")
         if trade_manager.is_weekend_flat_time(state_mod.now_dubai()):
-            notes = trade_manager.weekend_flat(client, state)   # FTMO Standard: no weekend holds
+            flat_notes, flat_failed = trade_manager.weekend_flat(client, state)
+            if flat_notes or flat_failed:
+                lines = [f"  {telegram.esc(n)} ✓" for n in flat_notes]
+                lines += [f"  {telegram.esc(f)} ✗" for f in flat_failed]
+                status = "partial" if flat_failed else f"{len(flat_notes)} closed"
+                telegram.send(f"⏹ <b>Weekend flatten — {status}</b>\n" + "\n".join(lines))
+            if flat_failed:
+                state_mod.freeze(state, "weekend flatten failed — manual close required", sticky=True)
+                telegram.send(f"🛑 <b>FROZEN</b> — weekend flatten failed.\n"
+                              f"Close manually in cTrader: {telegram.esc(', '.join(flat_failed))}")
         else:
-            notes += trade_manager.news_flatten(client, state, datetime.now(timezone.utc))  # don't hold thru news
-            notes += trade_manager.cancel_expired_orders(state)   # stale resting orders
+            n_notes, n_failed = trade_manager.news_flatten(client, state, datetime.now(timezone.utc))
+            if n_notes or n_failed:
+                lines = [f"  {telegram.esc(n)} ✓" for n in n_notes]
+                lines += [f"  {telegram.esc(f)} ✗" for f in n_failed]
+                status = "partial" if n_failed else f"{len(n_notes)} closed"
+                telegram.send(f"⏹ <b>News flatten — {status}</b>\n" + "\n".join(lines))
+            if n_failed:
+                state_mod.freeze(state, "news flatten failed — manual close required", sticky=True)
+                telegram.send(f"🛑 <b>FROZEN</b> — news flatten failed.\n"
+                              f"Close manually in cTrader: {telegram.esc(', '.join(n_failed))}")
+            notes += trade_manager.cancel_expired_orders(state)
             if state.get("open_positions"):
                 notes += trade_manager.manage_open_positions(client, state)
-        for n in notes:
-            telegram.send(f"🛠 {n}")
+        if notes:
+            items = "\n".join(f"  {telegram.esc(n)}" for n in notes)
+            telegram.send(f"🛠 <b>Trade management</b> ({len(notes)})\n{items}")
         state_mod.save(state)
     except Exception as e:
         print(f"watchdog: manage/reconcile skipped: {e}")
@@ -413,6 +490,15 @@ def cmd_set_news(args) -> int:
     state["news_windows_date"] = state_mod.now_ftmo().date().isoformat()  # FTMO day, not Dubai
     state_mod.save(state)
     print(f"stored {len(windows)} news window(s) for {state['news_windows_date']}")
+    # BUG 5 FIX: clear before draw so re-running set-news doesn't duplicate lines
+    try:
+        _overlay_client = McpClient()
+        chart_overlay.clear_news_lines(_overlay_client)
+        n_drawn = chart_overlay.draw_news_lines(_overlay_client, windows)
+        if n_drawn:
+            print(f"drew {n_drawn} news line(s) on open charts")
+    except Exception:
+        pass
     return 0
 
 
@@ -421,15 +507,26 @@ def cmd_eod(args) -> int:
     state = state_mod.load()
     snap = _account_snapshot(client, state)
     open_syms = [p.get("symbol") for p in state.get("open_positions", [])]
-    text = (f"🌙 EOD — bal ${snap['balance']:.2f} | day P/L ${snap['daily_pnl']:.2f} | "
-            f"trades {snap['trades_today']} | poor {snap['poor_outcomes']}\n"
-            f"open: {open_syms or 'flat'}")
-    warn = []
+    open_str = ", ".join(open_syms) if open_syms else "flat"
+    date_s  = state_mod.now_dubai().strftime("%a %d %b")
+    bal_s   = telegram.code(f"${snap['balance']:.2f}")
+    pnl_s   = telegram.code(telegram._net_str(snap["daily_pnl"]))
+    trd_s   = telegram.code(f"{snap['trades_today']}/{config.MAX_TRADES_PER_DAY}")
+    poor_s  = telegram.code(f"{snap['poor_outcomes']}/{config.MAX_POOR_OUTCOMES}")
+    text = (f"🌙 <b>EOD — {date_s}</b>\n"
+            f"Balance {bal_s}  ·  P/L {pnl_s}\n"
+            f"Trades {trd_s}  ·  Poor {poor_s}\n"
+            f"Positions  {telegram.code(open_str)}")
     if open_syms:
-        warn.append("open positions held — verify no weekend/CB-event exposure")
-    if warn:
-        text += "\n⚠️ " + "; ".join(warn)
+        text += "\n⚠️ Open positions held — verify no weekend/CB-event exposure"
     execute_mod.report_closures(snap["discrepancy"].get("closures", []))
+    try:
+        chart_overlay.clear_closed_brackets(client, snap["discrepancy"].get("closures", []))
+        chart_overlay.clear_fill_annotations(client)   # BUG 2 FIX: fill annotations EOD cleanup
+        chart_overlay.clear_news_lines(client)
+        chart_overlay.clear_all_scanner_levels(client)
+    except Exception:
+        pass
     state_mod.save(state)
     sheets.update_dashboard(snap)
     sheets.append_run([state_mod.now_dubai().strftime("%Y-%m-%d %H:%M"), "eod", "review",
@@ -512,7 +609,11 @@ def cmd_cot_update(args) -> int:
     try:
         bias, added = cot_mod.update()
     except Exception as e:
-        print(f"COT update failed: {e}")
+        last = cot_mod.load_bias()
+        last_date = next((v.get("date", "?") for v in last.values() if isinstance(v, dict)), "none")
+        msg = f"⚠️ COT fetch failed — using last known bias ({last_date}). Error: {e}"
+        telegram.send(msg)   # always alert (COT runs weekly via launchd, not interactively)
+        print(msg)
         return 1
     report = cot_mod.format_report(bias)
     print(report)

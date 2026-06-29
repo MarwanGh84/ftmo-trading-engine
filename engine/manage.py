@@ -65,9 +65,12 @@ def close_position(position_id) -> dict:
         telegram.send(f"🟡 WOULD close #{position_id} (disarmed)")
         return {"ok": True, "dry_run": True}
     client = McpClient()
-    res = client.call("close_position", {"positionId": position_id}, retries=1)
-    telegram.send(f"⏹ Closed #{position_id}")
-    return {"ok": True, "result": res}
+    try:
+        res = client.call("close_position", {"positionId": position_id}, retries=1)
+        telegram.send(f"⏹ Closed #{position_id}")
+        return {"ok": True, "result": res}
+    except Exception as e:
+        return {"ok": False, "reason": str(e)}
 
 
 def cancel_pending(order_id) -> dict:
@@ -75,9 +78,12 @@ def cancel_pending(order_id) -> dict:
         telegram.send(f"🟡 WOULD cancel order #{order_id} (disarmed)")
         return {"ok": True, "dry_run": True}
     client = McpClient()
-    res = client.call("cancel_order", {"orderId": order_id}, retries=1)
-    telegram.send(f"🗑 Cancelled pending #{order_id}")
-    return {"ok": True, "result": res}
+    try:
+        res = client.call("cancel_order", {"orderId": order_id}, retries=1)
+        telegram.send(f"🗑 Cancelled pending #{order_id}")
+        return {"ok": True, "result": res}
+    except Exception as e:
+        return {"ok": False, "reason": str(e)}
 
 
 def partial_take_profit(position_id, units: float) -> dict:

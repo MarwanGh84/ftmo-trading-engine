@@ -14,6 +14,8 @@ from datetime import datetime, timezone, timedelta
 
 from . import config, risk, rails, news, telegram, sheets
 from . import state as state_mod
+from . import manage as manage_mod
+from . import chart_overlay
 from .mcp_client import McpClient
 from .reconcile import reconcile
 
@@ -25,14 +27,29 @@ def _journal(line: str) -> None:
 
 def report_closures(closures: list[dict]) -> None:
     """Telegram + journal + Sheets a row for each position that closed since last run."""
+    if not closures:
+        return
+    ts = datetime.now(state_mod.TZ).strftime("%Y-%m-%d %H:%M")
+    if len(closures) == 1:
+        c = closures[0]
+        net = c.get("net")
+        net_s = telegram._net_str(net)
+        tag = "  ⚠️ poor outcome" if c.get("poor") else ""
+        telegram.send(f"📕 <b>{telegram.esc(c.get('symbol', ''))} #{c.get('id')}</b> closed  "
+                      f"— {c.get('result')} {telegram.code(net_s)}{tag}")
+    else:
+        lines = [f"📕 <b>{len(closures)} positions closed</b>"]
+        for c in closures:
+            net = c.get("net")
+            tag = " ⚠️" if c.get("poor") else ""
+            lines.append(f"  {telegram.esc(c.get('symbol', ''))} #{c.get('id')}  "
+                         f"· {c.get('result')} · {telegram.code(telegram._net_str(net))}{tag}")
+        telegram.send("\n".join(lines))
     for c in closures:
         net = c.get("net")
         net_s = f"${net:.2f}" if net is not None else "?"
-        tag = " (counts as poor outcome)" if c.get("poor") else ""
-        telegram.send(f"📕 Closed {c.get('symbol')} #{c.get('id')} — {c.get('result')} {net_s}{tag}")
         _journal(f"CLOSED {c.get('symbol')} #{c.get('id')} {c.get('result')} net {net_s} poor={c.get('poor')}")
-        sheets.append_trade([datetime.now(state_mod.TZ).strftime("%Y-%m-%d %H:%M"),
-                             c.get("symbol"), "", "close", "", "", "", "", "", "", "",
+        sheets.append_trade([ts, c.get("symbol"), "", "close", "", "", "", "", "", "", "",
                              f"{net:.2f}" if net is not None else "",
                              f"CLOSED-{c.get('result')}", "poor outcome" if c.get("poor") else "win"])
 
@@ -228,11 +245,18 @@ def execute(proposal: dict) -> dict:
     s = ctx["sizing"]
 
     if not rails.passed(results):
-        reasons = "; ".join(f"{r.name}: {r.reason}" for r in rails.failures(results))
+        failures = rails.failures(results)
+        reasons = "; ".join(f"{r.name}: {r.reason}" for r in failures)
         state_mod.save(state)
-        telegram.send(f"⛔ Trade refused {ctx['proposal']['symbol']} "
-                      f"{ctx['proposal']['side']} — {reasons}")
-        _journal(f"REFUSED {ctx['proposal']['symbol']} {ctx['proposal']['side']}: {reasons}")
+        p = ctx["proposal"]
+        reason_lines = "\n".join(f"  · {telegram.esc(r.name)}: {telegram.esc(r.reason)}"
+                                 for r in failures)
+        msg = (f"⛔ <b>Refused {telegram.esc(p['symbol'])} {telegram.esc(p['side'].upper())}</b>\n"
+               f"{reason_lines}")
+        if not state_mod.news_windows_fresh(state):
+            msg += "\n⚠️ News windows missing — run morning brief first"
+        telegram.send(msg)
+        _journal(f"REFUSED {p['symbol']} {p['side']}: {reasons}")
         _sheet_trade(proposal, "REFUSED", reasons, ctx)
         return {**report, "refused": True, "reason": reasons}
 
@@ -244,19 +268,37 @@ def execute(proposal: dict) -> dict:
                   "volume": s["units"], "volumeType": "units",
                   "stopLossPips": sl_pips, "takeProfitPips": tp_pips,
                   "label": "ftmo-engine",
-                  # setup|regime|confidence — persists into trade history for edge analysis (D/E)
-                  "comment": "|".join([str(p.get("setup_type", "")), str(p.get("regime", "")),
-                                       str(p.get("confidence", ""))])[:48]}
+                  # setup|regime|confidence — truncate each field individually so all survive
+                  "comment": (f"{str(p.get('setup_type', ''))[:16]}|"
+                              f"{str(p.get('regime', ''))[:12]}|"
+                              f"{str(p.get('confidence', ''))}")[:48]}
 
+    risk_usd = risk.risk_dollars(ctx["balance"], p["risk_pct"])
     summary = (f"{p['symbol']} {p['side'].upper()} {s['units']:.0f}u "
                f"({s['lots']:.2f} lots) | SL {sl_pips}p TP {tp_pips}p | "
-               f"risk ${risk.risk_dollars(ctx['balance'], p['risk_pct']):.2f} "
-               f"({p['risk_pct']}%) | R:R {s['rr']:.2f} | "
+               f"risk ${risk_usd:.2f} ({p['risk_pct']}%) | R:R {s['rr']:.2f} | "
                f"worst -${s['worst_case']:.2f}")
+
+    def _order_line() -> str:
+        rr = s["rr"]
+        worst = s["worst_case"]
+        rpc = p["risk_pct"]
+        units_s = f"{s['units']:.0f}u"
+        sl_s = f"{sl_pips}p"
+        tp_s = f"{tp_pips}p"
+        rr_s = f"{rr:.2f}"
+        risk_s = f"${risk_usd:.2f} ({rpc}%)"
+        worst_s = f"-${worst:.2f}"
+        line1 = (f"{telegram.code(units_s)}  "
+                 f"SL {telegram.code(sl_s)}  TP {telegram.code(tp_s)}  "
+                 f"R:R {telegram.code(rr_s)}")
+        line2 = f"Risk {telegram.code(risk_s)}  worst {telegram.code(worst_s)}"
+        return f"{line1}\n{line2}"
 
     if not config.is_armed():
         state_mod.save(state)
-        telegram.send(f"🟡 WOULD PLACE (disarmed): {summary}")
+        telegram.send(f"🟡 <b>Would place (disarmed): {telegram.esc(p['symbol'])} "
+                      f"{telegram.esc(p['side'].upper())}</b>\n{_order_line()}")
         _journal(f"DRY-RUN WOULD PLACE: {summary}")
         _sheet_trade(proposal, "DRY-RUN", summary, ctx)
         return {**report, "refused": False, "dry_run": True, "summary": summary,
@@ -270,7 +312,8 @@ def execute(proposal: dict) -> dict:
     pre_ids = _live_ids()
 
     # Heads-up that the engine is placing an order (auto-fills when cTrader confirmation is OFF).
-    telegram.send(f"📍 Placing {p['symbol']} {p['side'].upper()}\n{summary}")
+    telegram.send(f"📍 <b>Placing {telegram.esc(p['symbol'])} {telegram.esc(p['side'].upper())}</b>\n"
+                  f"{_order_line()}")
 
     # retries=1 so a slow confirmation can NEVER cause a duplicate order; long timeout to
     # wait out the manual confirmation dialog.
@@ -297,6 +340,40 @@ def execute(proposal: dict) -> dict:
     #    immediately, so reconcile counts it toward trades_taken_today here; a limit order is only
     #    counted when it later fills. Pending limits never inflate the daily trade count.
     reconcile(state, client)
+
+    # A9. Verify the broker echoed back a stop loss on every market fill. If SL is missing the
+    #     position is unprotected — close it immediately and sticky-freeze before any state write.
+    if p.get("order_type", "market") == "market":
+        new_pos_ids = {pp.get("id") for pp in state.get("open_positions", [])} - pre_ids
+        # BUG 8 FIX: track emergency-closed pids so we don't draw brackets for them
+        emergency_closed_ids: set = set()
+        for pid in new_pos_ids:
+            pos = next((pp for pp in state.get("open_positions", []) if pp.get("id") == pid), None)
+            if pos and not pos.get("sl"):
+                manage_mod.close_position(pid)
+                emergency_closed_ids.add(pid)
+                state_mod.freeze(state, f"SL missing at broker on #{pid} — born unprotected", sticky=True)
+                telegram.send(f"🛑 FATAL: {pos.get('symbol')} #{pid} filled WITHOUT broker SL. "
+                              f"Emergency closed + frozen. Verify cTrader settings.")
+        # Chart overlay: bracket + annotation only for positions that are still open
+        live_fill_ids = new_pos_ids - emergency_closed_ids
+        try:
+            for pid in live_fill_ids:
+                chart_overlay.draw_position_bracket(
+                    client, pid, p["symbol"], p["side"], p["entry"], p["stop"], p["target"])
+            if live_fill_ids:
+                chart_overlay.draw_fill_annotation(
+                    client, p["symbol"], p["side"],
+                    p.get("setup_type", ""), str(p.get("confidence", "")), p["entry"])
+                chart_overlay.notify(
+                    client,
+                    f"✅ FILLED: {p['symbol']} {p['side'].upper()}",
+                    f"{s['units']:.0f}u  SL {sl_pips}p  TP {tp_pips}p  R:R {s['rr']:.2f}",
+                    "success",
+                )
+        except Exception:
+            pass
+
     sid = p.get("signal_id")
     if sid and sid not in state.setdefault("executed_signals", []):
         state["executed_signals"].append(sid)
@@ -310,7 +387,11 @@ def execute(proposal: dict) -> dict:
     state_mod.save(state)
     # A market order is filled immediately; a limit/stop order is only PLACED (pending) until hit.
     status = "FILLED" if p.get("order_type", "market") == "market" else "PLACED"
-    telegram.send(f"✅ {status}: {summary}\n{json.dumps(res)[:300]}")
+    icon = "✅" if status == "FILLED" else "📋"
+    order_id = (res or {}).get("orderId") or (res or {}).get("positionId") if isinstance(res, dict) else None
+    id_note = f"  · ID {telegram.code(order_id)}" if order_id else ""
+    telegram.send(f"{icon} <b>{status}: {telegram.esc(p['symbol'])} "
+                  f"{telegram.esc(p['side'].upper())}</b>{id_note}\n{_order_line()}")
     _journal(f"{status}: {summary} :: {json.dumps(res)[:500]}")
     _sheet_trade(proposal, status, summary, ctx)
     return {**report, "refused": False, "placed": True, "status": status,

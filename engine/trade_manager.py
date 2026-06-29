@@ -14,6 +14,7 @@ import math
 from datetime import datetime, timezone
 
 from . import config, manage
+from . import chart_overlay
 
 
 def r_multiple(side: str, entry: float, risk_dist: float, price: float) -> float:
@@ -116,40 +117,75 @@ def active_news_currencies(state: dict, now_utc) -> set:
     return out
 
 
-def news_flatten(client, state: dict, now_utc) -> list[str]:
+def news_flatten(client, state: dict, now_utc) -> tuple[list[str], list[str]]:
     """Close engine positions + cancel engine orders on any currency whose HIGH/CB window is now
-    active — never hold/rest a trade through a high-impact event."""
+    active. Returns (notes, failed_ids) — caller must sticky-freeze if failed is non-empty."""
     if not config.NEWS_FLATTEN_ENABLED:
-        return []
+        return [], []
     ccys = active_news_currencies(state, now_utc)
     if not ccys:
-        return []
-    notes = []
+        return [], []
+    notes, failed = [], []
     for pos in list(state.get("open_positions", [])):
         sym = pos.get("symbol", "")
         if pos.get("label") == config.MANAGE_LABEL and len(sym) >= 6 and (sym[:3] in ccys or sym[3:6] in ccys):
-            manage.close_position(pos.get("id"))
-            notes.append(f"news-flat close {sym} #{pos.get('id')}")
+            r = manage.close_position(pos.get("id"))
+            if r.get("ok"):
+                notes.append(f"{sym} #{pos.get('id')}")
+            else:
+                failed.append(f"{sym} #{pos.get('id')}: {r.get('reason', 'close failed')}")
     for o in list(state.get("pending_orders", [])):
         sym = o.get("symbol", "")
         if o.get("label") == config.MANAGE_LABEL and len(sym) >= 6 and (sym[:3] in ccys or sym[3:6] in ccys):
-            manage.cancel_pending(o.get("id"))
-            notes.append(f"news-flat cancel {sym} #{o.get('id')}")
-    return notes
+            r = manage.cancel_pending(o.get("id"))
+            if r.get("ok"):
+                notes.append(f"order #{o.get('id')} cancelled")
+            else:
+                failed.append(f"order #{o.get('id')}: {r.get('reason', 'cancel failed')}")
+    return notes, failed
 
 
-def weekend_flat(client, state: dict) -> list[str]:
-    """Close all engine positions and cancel engine pending orders for the weekend."""
-    notes = []
+def weekend_flat(client, state: dict) -> tuple[list[str], list[str]]:
+    """Close all engine positions and cancel engine pending orders for the weekend.
+    Returns (notes, failed_ids) — caller must sticky-freeze if failed is non-empty."""
+    notes, failed = [], []
     for pos in list(state.get("open_positions", [])):
         if pos.get("label") == config.MANAGE_LABEL:
-            manage.close_position(pos.get("id"))
-            notes.append(f"weekend-flat close {pos.get('symbol')} #{pos.get('id')}")
+            r = manage.close_position(pos.get("id"))
+            if r.get("ok"):
+                notes.append(f"{pos.get('symbol')} #{pos.get('id')}")
+            else:
+                failed.append(f"{pos.get('symbol')} #{pos.get('id')}: {r.get('reason', 'close failed')}")
     for o in list(state.get("pending_orders", [])):
         if o.get("label") == config.MANAGE_LABEL:
-            manage.cancel_pending(o.get("id"))
-            notes.append(f"weekend-flat cancel #{o.get('id')}")
-    return notes
+            r = manage.cancel_pending(o.get("id"))
+            if r.get("ok"):
+                notes.append(f"order #{o.get('id')} cancelled")
+            else:
+                failed.append(f"order #{o.get('id')}: {r.get('reason', 'cancel failed')}")
+    return notes, failed
+
+
+def emergency_flat(state: dict) -> tuple[list[str], list[str]]:
+    """Immediately close all engine positions and cancel engine orders (kill-switch enforcement).
+    Returns (notes, failed_ids). Does NOT freeze — caller decides severity."""
+    notes, failed = [], []
+    for pos in list(state.get("open_positions", [])):
+        if pos.get("label") == config.MANAGE_LABEL:
+            sym, pid = pos.get("symbol", "?"), pos.get("id")
+            r = manage.close_position(pid)
+            if r.get("ok"):
+                notes.append(f"{sym} #{pid}")
+            else:
+                failed.append(f"{sym} #{pid}: {r.get('reason', 'close failed')}")
+    for o in list(state.get("pending_orders", [])):
+        if o.get("label") == config.MANAGE_LABEL:
+            r = manage.cancel_pending(o.get("id"))
+            if r.get("ok"):
+                notes.append(f"order #{o.get('id')} cancelled")
+            else:
+                failed.append(f"order #{o.get('id')}: {r.get('reason', 'cancel failed')}")
+    return notes, failed
 
 
 def manage_open_positions(client, state: dict) -> list[str]:
@@ -189,8 +225,13 @@ def manage_open_positions(client, state: dict) -> list[str]:
         for a in actions:
             if a["type"] in ("be", "trail"):
                 digits = d.get("digits", 5)
-                manage.set_stop(pos.get("id"), round(a["sl"], digits))
+                new_sl = round(a["sl"], digits)
+                manage.set_stop(pos.get("id"), new_sl)
                 notes.append(f"{pos.get('symbol')} #{pid} {a['type']} → SL {a['sl']:.{digits}f}")
+                try:
+                    chart_overlay.update_position_bracket(client, pos.get("id"), new_sl)
+                except Exception:
+                    pass
             elif a["type"] == "partial":
                 step = d.get("volumeStep", 1000)
                 close_units = math.floor((units * a["pct"]) / step) * step

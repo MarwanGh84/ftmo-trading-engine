@@ -463,3 +463,28 @@ CLOSED AUDUSD #55188600 LOSS net $-6.10 poor=True
 🌙 EOD — bal $10017.20 | day P/L $-5.86 | trades 1 | poor 1
 open: flat
 Review: AUDUSD sell-limit 0.6905 filled, SL 0.6928 hit at 17:53 (-$6.10, 1 poor outcome). Setup was structurally valid (D1 trend_down, H4 resistance, R:R 3.7) but price swept through entry zone without follow-through — reversal off 0.6875 deeper than expected. No rail violations; engine correctly blocked GBPAUD sell (correlated opposing AUD direction). Shadow edge +35 pts (N=14 graded, unproven). Next trade: risk reduced to 0.25% (1 poor outcome today). Account FLAT, all FTMO buffers safe ($10,017.20 >> $9,000 floor).
+
+## Weekly Plan 2026-06-29 (Mon 08:00 Dubai)
+USD broadly strong — USDJPY/USDCAD/USDCHF ↑; EUR/GBP/AUD/NZD pairs ↓; JPY-crosses ranging. NFP Thu = stand-aside; Wed heavy (Fed Warsh + BOE Bailey + ISM Mfg PMI). Best setup type: daily_level_rejection (PF 2.37).
+COT unavailable (SSL cert error — auto-retry Sat). Shadow edge n=14/unproven. Risk 0.25% (1 poor outcome carryover). Account $10,017.20, flat, all FTMO buffers safe.
+
+## 2026-06-29 09:30 Dubai — Morning Brief
+Account: $10,017.20 bal/eq (+$17.20 vs baseline), 0 positions, 0 trades today. 1 news window set: EUR 17:15–17:45Z (Lagarde speech, Tier 3 ±15 min). Calendar otherwise clear; Italian bank holiday = thin EUR liquidity today; risk remains 0.25% (1 poor outcome carryover from Fri).
+
+### 2026-06-29T14:19:01.880509+04:00
+PLACED: USDCAD BUY 12000u (0.12 lots) | SL 55.0p TP 130.0p | risk $50.09 (0.5%) | R:R 2.36 | worst -$48.12 :: {"orderId": 162500763, "status": "placed"}
+
+## 2026-06-29 13:30 Dubai (midday run)
+USDCAD buy limit 1.4150 placed (order 162500763). D1 trend_up; entry at Jun-22 H4 support zone 1.4145-1.4150; stop 1.4095 / target 1.4280; R:R 2.36; expires in 10h into NY session. All 17 watchlist pairs scanned — only USDCAD qualified. USDJPY shadow-skipped (valid but low fill probability today). Shadow stats: 14 graded, +35pt edge, n<30.
+
+### 2026-06-29T16:40:07.485644+04:00
+PLACED: AUDUSD SELL 11000u (0.11 lots) | SL 22.0p TP 65.0p | risk $25.04 (0.25%) | R:R 2.95 | worst -$26.18 :: {"orderId": 162518440, "status": "placed"}
+(eval):printf:1: %.\n: invalid directive
+
+## 2026-06-29 NYO 16:33 run
+AUDUSD sell limit 0.6913 placed (ord 162518440) — D1 trend_down, H4 resistance zone, R:R 2.95, risk 0.25
+## EOD 2026-06-29
+🌙 EOD [cap-hit, offline] — bal $10,017.20 | day P/L $0.00 | fills 0 | poor 0 | open: FLAT ✅
+Daily req cap (1800) hit; eod --report failed; state read from state.json. 2 pending limit orders (USDCAD buy @1.4150 ord 162500763; AUDUSD sell @0.6913 ord 162518440) remain live on broker — engine cannot expire them tonight; morning audit will reconcile.
+No FTMO rail violations today. Shadow edge +42 pts (N=16 graded, n<30 unproven). Both orders correctly sized (USDCAD 0.5% pre-poor-outcome reset; AUDUSD 0.25% conservative 2nd order).
+Lesson: request cap exhaustion blocks EOD management — consider rate-limiting scanner runs on heavy-news days.

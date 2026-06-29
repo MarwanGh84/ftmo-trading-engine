@@ -1,10 +1,16 @@
 """FTMO autonomous trading operator — deterministic enforcement engine."""
-import sentry_sdk
+try:
+    import sentry_sdk as _sentry_sdk
+    _sentry_available = True
+except ImportError:
+    _sentry_sdk = None
+    _sentry_available = False
+
 from . import config
 
 _dsn = config._env("SENTRY_DSN", "")
-if _dsn:
-    sentry_sdk.init(
+if _dsn and _sentry_available:
+    _sentry_sdk.init(
         dsn=_dsn,
         environment="live" if config.is_armed() else "dry",
         traces_sample_rate=0.0,   # no performance tracing — errors only
