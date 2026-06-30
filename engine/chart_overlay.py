@@ -449,6 +449,43 @@ def clear_news_lines(client) -> bool:
         return False
 
 
+# ── Alert trigger detection ────────────────────────────────────────────────────
+
+def check_triggered_alerts(client) -> list[dict]:
+    """Return scanner levels whose price alerts have fired (disappeared from cTrader).
+
+    cTrader removes an alert from the list when it fires. By diffing our tracked IDs
+    against the live list we detect which levels were touched since the last watchdog run.
+    Clears the fired alert_id from state so we don't re-detect on the next cycle.
+    """
+    try:
+        data = _load()
+        levels = data.get("scanner_levels", {})
+        if not any(e.get("alert_id") for e in levels.values()):
+            return []
+        live_ids = {
+            str(a.get("id") or a.get("alertId"))
+            for a in client.call("get_price_alerts").get("alerts", [])
+        }
+        triggered = []
+        changed = False
+        for sym, entry in levels.items():
+            aid = entry.get("alert_id")
+            if aid and str(aid) not in live_ids:
+                triggered.append({
+                    "symbol": sym,
+                    "level": entry.get("level"),
+                    "near": entry.get("near"),
+                })
+                entry["alert_id"] = None   # consumed — don't re-detect next cycle
+                changed = True
+        if changed:
+            _save(data)
+        return triggered
+    except Exception:
+        return []
+
+
 # ── Session setup ──────────────────────────────────────────────────────────────
 
 def setup_session_charts(client, state: dict) -> int:

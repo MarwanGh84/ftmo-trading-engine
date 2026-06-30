@@ -20,6 +20,7 @@ from datetime import datetime, timezone, timedelta
 from . import config, risk, telegram, sheets
 from . import state as state_mod
 from . import chart_overlay
+from . import alert_analyst
 from .mcp_client import McpClient, requests_used_today
 from .reconcile import reconcile
 from . import execute as execute_mod
@@ -214,9 +215,14 @@ def cmd_watchdog(args) -> int:
     state = state_mod.load()
     flat = (not state.get("open_positions") and not state.get("pending_orders")
             and not state.get("daily_limit_hit") and not state.get("trade_plans"))
+    has_tracked_alerts = any(
+        e.get("alert_id")
+        for e in chart_overlay._load().get("scanner_levels", {}).values()
+    )
     if (flat and not state.get("frozen")
-            and not trade_manager.is_weekend_flat_time(state_mod.now_dubai())):
-        print("watchdog: flat, no open risk -> skip")
+            and not trade_manager.is_weekend_flat_time(state_mod.now_dubai())
+            and not has_tracked_alerts):
+        print("watchdog: flat, no open risk, no tracked alerts -> skip")
         return 0
     try:
         client = McpClient()
@@ -354,6 +360,15 @@ def cmd_watchdog(args) -> int:
         state_mod.save(state)
     except Exception as e:
         print(f"watchdog: manage/reconcile skipped: {e}")
+
+    # ── Alert analysis: detect fired price alerts → auto take/skip via Telegram ──
+    try:
+        triggered = chart_overlay.check_triggered_alerts(client)
+        for t in triggered:
+            alert_analyst.analyze_and_notify(client, t["symbol"], t["level"], t["near"])
+    except Exception:
+        pass
+
     print(f"watchdog: eq ${equity:.2f} floor ${floor:.2f} hit={state.get('daily_limit_hit')} "
           f"managed={len(notes)}")
     return 0

@@ -488,3 +488,33 @@ AUDUSD sell limit 0.6913 placed (ord 162518440) — D1 trend_down, H4 resistance
 Daily req cap (1800) hit; eod --report failed; state read from state.json. 2 pending limit orders (USDCAD buy @1.4150 ord 162500763; AUDUSD sell @0.6913 ord 162518440) remain live on broker — engine cannot expire them tonight; morning audit will reconcile.
 No FTMO rail violations today. Shadow edge +42 pts (N=16 graded, n<30 unproven). Both orders correctly sized (USDCAD 0.5% pre-poor-outcome reset; AUDUSD 0.25% conservative 2nd order).
 Lesson: request cap exhaustion blocks EOD management — consider rate-limiting scanner runs on heavy-news days.
+[2026-06-30 09:34] Morning brief: 3 news windows set (EUR CPI 05:29-07:14, CAD GDP 12:00-13:00, USD JOLTS/CB 13:45-14:15 UTC). 11:00 run blocks EUR; 16:33 run blocks CAD (USDCAD auto-flatten). 2 limits pending, 0 fills.
+
+### 2026-06-30T11:08:32.263747+04:00
+REFUSED GBPAUD buy: aggregate_risk: aggregate (open+pending+new) risk 1.20% > 1.0%
+
+### 2026-06-30T11:09:12.497510+04:00
+PLACED: GBPAUD BUY 7000u (0.07 lots) | SL 50.0p TP 140.0p | risk $25.04 (0.25%) | R:R 2.80 | worst -$25.47 :: {"orderId": 162656203, "status": "placed"}
+
+## 2026-06-30 11:00 Dubai — London Open Run
+Placed GBPAUD buy-limit 1.9250 (0.25% — aggregate cap hit by existing USDCAD+AUDUSD orders). Setup: D1 trend_up, Asia broke 20D high 1.9258, AUD broadly weak. SL 1.9200, TP 1.9390, R:R 2.8.
+Skipped AUDJPY short (trend_down near 20D low 111.235 but level held 3-4x; correlated AUD sell risk). Shadow logged both.
+
+## 2026-06-30 13:30 Dubai — Midday Run
+Bal $10,017 | Equity $10,006 | Daily room $189 | 1/5 fills | 0 poor outcomes.
+Open: GBPAUD long @ 1.925, -$10.81 floating (engine-managed). Pending: USDCAD buy-lim 1.4150 & AUDUSD sell-lim 0.6913 (both valid; engine flattens before CAD GDP 16:00 / USD news 17:45).
+No new trades: USD-direction slots full (2 pending USD-long), AUD-direction slots full (GBPAUD + AUDUSD limit = 2 AUD-short), EURGBP range+single-confluence skip, XAUUSD mid-bounce skip.
+
+### 2026-06-30T15:17:57.276307+04:00
+CLOSED GBPAUD #55348367 LOSS net $-24.52 poor=True
+
+## 2026-06-30 16:33 Dubai — NY Overlap Run (Final Session)
+1 fill today (GBPAUD long closed -$24.52, 1 poor outcome, risk capped at 0.25%). Daily room $175.82 remaining. USD news 13:45Z in ~45 min.
+Candidates reviewed: AUDUSD sell-lim 0.6913 (ord 162518440) left live — engine manages before news window. USDCAD counter-trend sell 1.4248 skipped (trend_up, no rejection candle, news timing). XAUUSD sell 4043 skipped (valid setup after new 20D low 3941.74 but 45-min window before auto-flatten insufficient for 3960 target). Full watchlist: GBP/JPY, EUR/JPY range-bound; crosses mid-range, no ≥2 confluence setups.
+No new trades. Engine manages AUDUSD limit through news. Shadow-logged: USDCAD skip (conf 30), XAUUSD skip (conf 40).
+
+## EOD 2026-06-30
+🌙 EOD [cap-hit, offline] — bal ~$9,992.68 | day P/L -$24.52 | fills 1 (GBPAUD long, poor) | poor 1 | open: FLAT ✅
+AUDUSD sell-lim 0.6913 ord 162518440 still showing in state; engine frozen (0 symbols quoting) before EOD — uncertain if auto-flattened through news or still live on broker. Morning audit will reconcile and cancel if stale.
+Shadow edge +35 pts (N=19 graded, n<30 unproven): takes 4/4 75% win, skips 15/40% win — filter holding but small sample.
+Lesson: engine froze (data feed degraded) while pending order was live — need broker-side visibility at EOD when engine goes blind.
