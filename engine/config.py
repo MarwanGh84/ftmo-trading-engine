@@ -185,3 +185,7 @@ def google_sa_json() -> str:
 def uptime_kuma_url() -> str:
     """Push URL for the Uptime Kuma heartbeat monitor. Empty = disabled."""
     return _env("UPTIME_KUMA_URL", "")
+
+
+def anthropic_api_key() -> str:
+    return _env("ANTHROPIC_API_KEY", "")

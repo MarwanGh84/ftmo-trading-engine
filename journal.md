@@ -518,3 +518,25 @@ No new trades. Engine manages AUDUSD limit through news. Shadow-logged: USDCAD s
 AUDUSD sell-lim 0.6913 ord 162518440 still showing in state; engine frozen (0 symbols quoting) before EOD — uncertain if auto-flattened through news or still live on broker. Morning audit will reconcile and cancel if stale.
 Shadow edge +35 pts (N=19 graded, n<30 unproven): takes 4/4 75% win, skips 15/40% win — filter holding but small sample.
 Lesson: engine froze (data feed degraded) while pending order was live — need broker-side visibility at EOD when engine goes blind.
+
+## 2026-07-01 09:30 Dubai — Morning Brief
+Audit reconciled clean: bal $9,992.68, equity $10,011.45, daily room $218.62. Open: AUDUSD sell 0.11 lot @0.69131, +$18.77 (engine-managed). 10 news windows published (EUR CPI 12:00-13:45, USD ADP/ISM/Fed Warsh, GBP Bailey, CAD Macklem, EUR Lagarde x2, USD Trump 23:00-23:30 — all Dubai time). CAD bank holiday today, thinner liquidity expected.
+
+### 2026-07-01T11:03:59.483484+04:00
+PLACED: USDJPY BUY 25000u (0.25 lots) | SL 32.0p TP 70.0p | risk $49.96 (0.5%) | R:R 2.19 | worst -$52.56 :: {"orderId": 162822266, "status": "placed"}
+
+## 2026-07-01 13:30 Dubai — Midday Run
+Bal $9,992.68 | Equity $10,012.86 | Daily room $220 | 0/5 fills | 0 poor outcomes. Open: AUDUSD sell +$21.3, USDJPY buy pending @162.6 (both engine-managed); separate manual USDJPY long left untouched.
+Broad USD-strength theme (USDJPY/USDCAD/USDCHF up, AUDUSD/NZDUSD/GBPUSD down) but already 3 long-USD-correlated legs open — no room to add without stacking. GBPJPY/EURGBP range-regime, single weak confluence. XAUUSD extended mid-decline, not at a pullback level. BOE Bailey/Fed Warsh/ISM HIGH news cluster 17:00-18:00 Dubai raises entry risk on USD/GBP names right now.
+No new trades. Shadow-logged 4 skips (USDCAD conf45, EURGBP conf30, XAUUSD conf35, GBPJPY conf30).
+
+## 2026-07-01 16:33 Dubai — NY Overlap Run
+STOPPED before analysis: MCP request cap hit (1876/1800 used) and state.json frozen ("market data feed degraded (0 symbols quoting)") as of 16:32 — audit crashed with RequestCapExceeded before completing, no live data available. No new trades, no cancels attempted.
+Last known good: 0/5 fills, 0 poor outcomes, kill-switch clear. Open: AUDUSD sell +$16.57, USDJPY buy +$2.20 (both engine-managed, unaffected by this session's freeze). Manual Telegram alert sent since automated report didn't fire (unhandled exception).
+Recurring pattern (2nd time, see 2026-06-30 EOD note) — feed-degraded freeze correlating with request-cap exhaustion; worth investigating request budget consumption (scanner/watchdog cadence) separate from trading logic.
+
+## EOD 2026-07-01
+🌙 EOD [cap-hit, offline] — bal $9,992.68 (day start) | day P/L flat, 0 fills, 0 poor outcomes | open: AUDUSD sell +$16.57 (engine-managed), USDJPY buy +$2.20 (unlabeled, NOT auto-managed).
+Engine blind since ~16:32 (req cap 2046/1800, feed frozen); resets 00:00 Dubai — after tonight's Trump speech (HIGH USD, 23:00-23:30 Dubai), so no auto-flatten protection for that window. Telegram alert sent recommending manual review of USDJPY before 23:00.
+Not Friday, no weekend-flat needed. Shadow edge +18pts (n=28 graded, narrowing from +35pts) — take 50%/skip 32%, still unproven at n<30.
+Lesson: 3rd feed-freeze/cap event in 3 sessions, firing progressively earlier each day — request budget (scanner/watchdog cadence) needs investigation, not just tonight's workaround.

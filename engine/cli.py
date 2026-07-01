@@ -32,6 +32,8 @@ from . import backtest as backtest_mod
 from . import stats as stats_mod
 from . import shadow as shadow_mod
 from . import cot as cot_mod
+from . import morning_brief as morning_brief_mod
+from . import session_audit as session_audit_mod
 
 
 # Scheduled Claude runs (Dubai local, Mon–Fri). Mirrors the .claude/scheduled-tasks crons so the
@@ -613,6 +615,73 @@ def cmd_unfreeze(args) -> int:
     return 0
 
 
+def cmd_morning_brief(args) -> int:
+    """Auto morning brief: audit + fetch ForexFactory calendar + write news windows + Telegram."""
+    client = McpClient()
+    state = state_mod.load()
+
+    # 1. Account snapshot + report (same as audit --report)
+    snap = _account_snapshot(client, state)
+    state_mod.save(state)
+    now_s = state_mod.now_dubai().strftime("%H:%M")
+    pnl_s = telegram._net_str(snap["daily_pnl"])
+    bal_s   = telegram.code(f"${snap['balance']:.2f}")
+    eq_s    = telegram.code(f"${snap['equity']:.2f}")
+    droom_s = telegram.code(f"${snap['daily_room']:.2f}")
+    oroom_s = telegram.code(f"${snap['overall_room']:.2f}")
+    trd_s   = telegram.code(f"{snap['trades_today']}/{config.MAX_TRADES_PER_DAY}")
+    poor_s  = telegram.code(f"{snap['poor_outcomes']}/{config.MAX_POOR_OUTCOMES}")
+    armed_s = "✅ live" if config.is_armed() else "🟡 disarmed"
+    audit_text = (f"📊 <b>Account — {now_s} Dubai</b>\n"
+                  f"Balance {bal_s}  ·  Equity {eq_s}  ·  P/L {telegram.code(pnl_s)}\n"
+                  f"Daily room {droom_s}  ·  Overall room {oroom_s}\n"
+                  f"Trades {trd_s}  ·  Poor {poor_s}  ·  ARMED {armed_s}")
+    execute_mod.report_closures(snap["discrepancy"].get("closures", []))
+    sheets.update_dashboard(snap)
+    sheets.append_run([state_mod.now_dubai().strftime("%Y-%m-%d %H:%M"), "morning-brief", "auto",
+                       f"bal ${snap['balance']:.2f}"])
+    telegram.send(audit_text)
+
+    # 2. Calendar fetch + write news windows
+    try:
+        state = state_mod.load()   # reload after save above
+        morning_brief_mod.run(client, state)
+    except Exception as e:
+        telegram.send(f"⚠️ Morning brief calendar fetch failed: {telegram.esc(str(e))}")
+        return 1
+
+    print(f"morning-brief: complete, {len(state.get('news_windows', []))} windows written")
+    return 0
+
+
+def cmd_session_audit(args) -> int:
+    """Auto session audit: analyze all 17 pairs via Claude API, execute best setups."""
+    client = McpClient()
+    state = state_mod.load()
+    snap = _account_snapshot(client, state)
+    state_mod.save(state)
+
+    execute_mod.report_closures(snap["discrepancy"].get("closures", []))
+    try:
+        chart_overlay.clear_closed_brackets(client, snap["discrepancy"].get("closures", []))
+        chart_overlay.setup_session_charts(client, state)
+    except Exception:
+        pass
+
+    sheets.update_dashboard(snap)
+    sheets.append_run([state_mod.now_dubai().strftime("%Y-%m-%d %H:%M"), "session-audit", "auto",
+                       f"bal ${snap['balance']:.2f} fills {snap['trades_today']}"])
+
+    try:
+        session_audit_mod.run(client, state, snap)
+    except Exception as e:
+        telegram.send(f"⚠️ Session audit failed: {telegram.esc(str(e))}")
+        return 1
+
+    print("session-audit: complete")
+    return 0
+
+
 def cmd_cot_update(args) -> int:
     """Download the CFTC TFF report and update the local COT macro bias cache.
 
@@ -708,12 +777,19 @@ def main(argv=None) -> int:
     cot.add_argument("--report", action="store_true", help="also send result via Telegram")
     cot.set_defaults(func=cmd_cot_update)
 
+    mb = sub.add_parser("morning-brief")
+    mb.set_defaults(func=cmd_morning_brief)
+
+    sa = sub.add_parser("session-audit")
+    sa.set_defaults(func=cmd_session_audit)
+
     args = ap.parse_args(argv)
     # Serialize state-mutating commands across processes (5-min watchdog / scheduled runs /
     # interactive calls) so a concurrent save() can't drop an accumulated counter. Read-only
     # commands (bars/quote/scan/candidates/stats/backtest/subscribe) don't take the lock, so
     # data fetches are never blocked by a long-running placement.
-    _MUTATING = {cmd_audit, cmd_execute, cmd_manage, cmd_watchdog, cmd_set_news, cmd_eod}
+    _MUTATING = {cmd_audit, cmd_execute, cmd_manage, cmd_watchdog, cmd_set_news, cmd_eod,
+                 cmd_morning_brief, cmd_session_audit}
     if args.func in _MUTATING:
         with state_mod.transaction() as got_lock:
             if not got_lock:
