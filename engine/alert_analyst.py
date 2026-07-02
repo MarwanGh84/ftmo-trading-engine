@@ -212,17 +212,55 @@ def _call_claude(prompt: str) -> dict:
     if not key:
         raise RuntimeError("ANTHROPIC_API_KEY not set in .env")
     ac = _anthropic.Anthropic(api_key=key)
-    msg = ac.messages.create(
-        model=_MODEL,
-        max_tokens=_MAX_TOKENS,
-        temperature=0,
-        system=_SYSTEM,
-        messages=[{"role": "user", "content": prompt}],
-    )
-    raw = msg.content[0].text.strip()
-    raw = re.sub(r"^```(?:json)?\s*", "", raw)
-    raw = re.sub(r"\s*```$", "", raw)
-    return json.loads(raw)
+
+    import time as _time
+    last_exc: Exception = RuntimeError("no attempts made")
+    last_raw: str = ""
+    for attempt in range(3):
+        try:
+            msg = ac.messages.create(
+                model=_MODEL,
+                max_tokens=_MAX_TOKENS,
+                temperature=0,
+                system=_SYSTEM,
+                messages=[{"role": "user", "content": prompt}],
+            )
+            if not msg.content:
+                raise ValueError(f"no content blocks (stop_reason={msg.stop_reason})")
+            last_raw = msg.content[0].text.strip()
+            raw = re.sub(r"^```(?:json)?\s*", "", last_raw)
+            raw = re.sub(r"\s*```$", "", raw).strip()
+            if not raw:
+                raise ValueError(f"empty body after strip (stop_reason={msg.stop_reason})")
+            return json.loads(raw)
+        except Exception as exc:
+            last_exc = exc
+            if attempt < 2:
+                _time.sleep(3 * (attempt + 1))
+
+    # All 3 attempts failed — log for debugging and return conservative WAIT
+    _log_brain_error(last_exc, last_raw, prompt)
+    return {
+        "verdict": "WAIT",
+        "side": None, "entry": None, "stop": None, "target": None,
+        "setup_type": None, "confidence": "low",
+        "reasoning": f"Brain parse failed after 3 attempts: {str(last_exc)[:120]}",
+    }
+
+
+def _log_brain_error(exc: Exception, raw: str, prompt: str) -> None:
+    import os
+    log_path = os.path.expanduser("~/trading/brain_errors.log")
+    try:
+        from datetime import datetime as _dt
+        ts = _dt.now().isoformat(timespec="seconds")
+        with open(log_path, "a") as f:
+            f.write(f"\n=== {ts} ===\n")
+            f.write(f"ERROR: {exc}\n")
+            f.write(f"RAW ({len(raw)} chars): {raw[:300]}\n")
+            f.write(f"PROMPT (first 400 chars):\n{prompt[:400]}\n")
+    except Exception:
+        pass
 
 
 def _do_execute(symbol: str, near: str, analysis: dict) -> dict | None:

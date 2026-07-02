@@ -1,140 +1,78 @@
 {
   "account_baseline": 10000.0,
   "candidates": [],
-  "candidates_time": "19:56",
+  "candidates_time": "19:45",
   "counted_positions": [],
   "daily_limit_hit": false,
   "daily_pnl": 0.0,
-  "day_start_balance": 9992.68,
+  "day_start_balance": 9949.08,
   "executed_signals": [
-    "2026-07-01:USDJPY:buy:162.6"
+    "2026-07-02:EURGBP:sell:0.8608",
+    "2026-07-02:GBPAUD:buy:1.9285"
   ],
   "frozen": true,
   "frozen_reason": "market data feed degraded (0 symbols quoting)",
   "frozen_sticky": false,
-  "last_run_iso": "2026-07-01T20:04:59.920157+04:00",
+  "last_run_iso": "2026-07-02T20:02:54.290894+04:00",
   "news_windows": [
     {
-      "ccy": "EUR",
-      "end_iso": "2026-07-01T09:45:00Z",
-      "event": "CPI Flash Estimate y/y",
+      "ccy": "CHF",
+      "end_iso": "2026-07-02T07:15:00Z",
+      "event": "CPI m/m",
       "kind": "high",
-      "start_iso": "2026-07-01T08:00:00Z"
-    },
-    {
-      "ccy": "EUR",
-      "end_iso": "2026-07-01T09:45:00Z",
-      "event": "Core CPI Flash Estimate y/y",
-      "kind": "high",
-      "start_iso": "2026-07-01T08:00:00Z"
+      "start_iso": "2026-07-02T05:30:00Z"
     },
     {
       "ccy": "USD",
-      "end_iso": "2026-07-01T12:45:00Z",
-      "event": "ADP Non-Farm Employment Change",
+      "end_iso": "2026-07-02T13:15:00Z",
+      "event": "NFP / Unemployment Rate / Avg Hourly Earnings",
       "kind": "high",
-      "start_iso": "2026-07-01T11:45:00Z"
-    },
-    {
-      "ccy": "CAD",
-      "end_iso": "2026-07-01T13:15:00Z",
-      "event": "BOC Gov Macklem Speaks",
-      "kind": "high",
-      "start_iso": "2026-07-01T12:45:00Z"
-    },
-    {
-      "ccy": "EUR",
-      "end_iso": "2026-07-01T13:15:00Z",
-      "event": "ECB President Lagarde Speaks",
-      "kind": "high",
-      "start_iso": "2026-07-01T12:45:00Z"
-    },
-    {
-      "ccy": "GBP",
-      "end_iso": "2026-07-01T13:15:00Z",
-      "event": "BOE Gov Bailey Speaks",
-      "kind": "high",
-      "start_iso": "2026-07-01T12:45:00Z"
-    },
-    {
-      "ccy": "USD",
-      "end_iso": "2026-07-01T13:15:00Z",
-      "event": "Fed Chairman Warsh Speaks",
-      "kind": "high",
-      "start_iso": "2026-07-01T12:45:00Z"
-    },
-    {
-      "ccy": "EUR",
-      "end_iso": "2026-07-01T14:15:00Z",
-      "event": "ECB President Lagarde Speaks",
-      "kind": "high",
-      "start_iso": "2026-07-01T13:45:00Z"
-    },
-    {
-      "ccy": "USD",
-      "end_iso": "2026-07-01T14:30:00Z",
-      "event": "ISM Manufacturing PMI",
-      "kind": "high",
-      "start_iso": "2026-07-01T13:30:00Z"
-    },
-    {
-      "ccy": "USD",
-      "end_iso": "2026-07-01T19:30:00Z",
-      "event": "President Trump Speaks",
-      "kind": "high",
-      "start_iso": "2026-07-01T19:00:00Z"
+      "start_iso": "2026-07-02T11:30:00Z"
     }
   ],
-  "news_windows_date": "2026-07-01",
-  "open_positions": [
+  "news_windows_date": "2026-07-02",
+  "open_positions": [],
+  "order_expiry": {
+    "163009467": "2026-07-02T13:05:45.653012+00:00",
+    "163032942": "2026-07-02T17:38:49.238316+00:00"
+  },
+  "pending_orders": [
     {
-      "current": 0.68969,
-      "entry": 0.69131,
-      "id": 55289849,
+      "id": 163009467,
       "label": "ftmo-engine",
-      "lots": 0.11,
-      "net_profit": 16.57,
-      "open_time": "2026-06-30T14:44:01.208Z",
       "side": "sell",
-      "sl": 0.6907,
-      "sl_pips": 6.1,
-      "symbol": "AUDUSD",
-      "tp": 0.68481,
-      "tp_pips": 65.0,
-      "volume_units": 11000
+      "sl_pips": 18,
+      "symbol": "EURGBP",
+      "target_price": 0.8608,
+      "tp_pips": 60,
+      "type": "Limit",
+      "volume_units": 20000
     },
     {
-      "current": 162.707,
-      "entry": 162.681,
-      "id": 55424400,
-      "label": "",
-      "lots": 0.2,
-      "net_profit": 2.2,
-      "open_time": "2026-07-01T08:01:51.749Z",
+      "id": 163032942,
+      "label": "ftmo-engine",
       "side": "buy",
-      "sl": 162.295,
-      "sl_pips": 38.6,
-      "symbol": "USDJPY",
-      "tp": 163.259,
-      "tp_pips": 57.8,
-      "volume_units": 20000
+      "sl_pips": 75,
+      "symbol": "GBPAUD",
+      "target_price": 1.9285,
+      "tp_pips": 150,
+      "type": "Limit",
+      "volume_units": 9000
     }
   ],
-  "order_expiry": {},
-  "pending_orders": [],
   "poor_outcomes_today": 0,
   "scanner_alerts": {
     "AUDJPY": {
       "key": "support:111.235",
-      "ts": "2026-06-30T10:21:14.275577+04:00"
+      "ts": "2026-07-02T15:42:50.838901+04:00"
     },
     "AUDUSD": {
       "key": "support:0.6865",
       "ts": "2026-07-01T14:08:17.988421+04:00"
     },
     "CADJPY": {
-      "key": "support",
-      "ts": "2026-06-25T16:51:12.600378+04:00"
+      "key": "support:113.518",
+      "ts": "2026-07-02T15:42:50.840536+04:00"
     },
     "EURAUD": {
       "key": "resistance:1.6603",
@@ -155,7 +93,7 @@
     },
     "GBPAUD": {
       "key": "resistance:1.928",
-      "ts": "2026-07-01T13:37:47.555347+04:00"
+      "ts": "2026-07-02T15:42:50.850553+04:00"
     },
     "GBPJPY": "none",
     "GBPUSD": {
@@ -208,141 +146,141 @@
   "unreachable_streak": 0,
   "watchlist_levels": {
     "AUDJPY": {
-      "atr": 0.7590714285714272,
+      "atr": 0.7466428571428564,
       "bias": "bear",
-      "recent_high": 114.852,
+      "recent_high": 114.25,
       "recent_low": 111.235,
       "regime": "trend_down",
-      "trend_strength": -1.18
+      "trend_strength": -1.27
     },
     "AUDUSD": {
-      "atr": 0.004977857142857145,
+      "atr": 0.004702142857142861,
       "bias": "bear",
-      "recent_high": 0.71816,
+      "recent_high": 0.71488,
       "recent_low": 0.68652,
       "regime": "trend_down",
-      "trend_strength": -2.15
+      "trend_strength": -2.38
     },
     "CADJPY": {
-      "atr": 0.5372857142857137,
+      "atr": 0.5009285714285697,
       "bias": "bull",
-      "recent_high": 115.6,
+      "recent_high": 115.362,
       "recent_low": 113.518,
       "regime": "trend_down",
-      "trend_strength": -1.3
+      "trend_strength": -1.31
     },
     "EURAUD": {
-      "atr": 0.008861428571428591,
+      "atr": 0.008750714285714294,
       "bias": "bull",
       "recent_high": 1.66186,
-      "recent_low": 1.6184,
+      "recent_low": 1.6249,
       "regime": "trend_up",
-      "trend_strength": 1.1
+      "trend_strength": 1.17
     },
     "EURCHF": {
-      "atr": 0.0031478571428571467,
-      "bias": "bull",
+      "atr": 0.003151428571428575,
+      "bias": "bear",
       "recent_high": 0.92661,
       "recent_low": 0.91374,
       "regime": "trend_up",
-      "trend_strength": 1.42
+      "trend_strength": 1.38
     },
     "EURGBP": {
-      "atr": 0.0028092857142857125,
+      "atr": 0.0029928571428571383,
       "bias": "bear",
       "recent_high": 0.86861,
-      "recent_low": 0.86026,
+      "recent_low": 0.85657,
       "regime": "range",
-      "trend_strength": -0.23
+      "trend_strength": -0.33
     },
     "EURJPY": {
-      "atr": 0.9885714285714309,
+      "atr": 0.9939285714285708,
       "bias": "bull",
       "recent_high": 186.313,
       "recent_low": 183.165,
       "regime": "range",
-      "trend_strength": -0.35
+      "trend_strength": -0.39
     },
     "EURUSD": {
-      "atr": 0.006534999999999973,
+      "atr": 0.0063535714285714185,
       "bias": "bear",
       "recent_high": 1.16452,
       "recent_low": 1.13245,
       "regime": "trend_down",
-      "trend_strength": -1.62
+      "trend_strength": -1.75
     },
     "GBPAUD": {
-      "atr": 0.011022857142857143,
+      "atr": 0.011224999999999994,
       "bias": "bull",
       "recent_high": 1.92801,
-      "recent_low": 1.8739,
+      "recent_low": 1.87881,
       "regime": "trend_up",
-      "trend_strength": 1.15
+      "trend_strength": 1.25
     },
     "GBPJPY": {
-      "atr": 1.2845000000000044,
+      "atr": 1.2671428571428598,
       "bias": "bull",
-      "recent_high": 215.772,
+      "recent_high": 215.932,
       "recent_low": 212.396,
       "regime": "range",
-      "trend_strength": -0.19
+      "trend_strength": -0.16
     },
     "GBPUSD": {
-      "atr": 0.008173571428571431,
+      "atr": 0.00792142857142857,
       "bias": "bear",
       "recent_high": 1.34831,
       "recent_low": 1.314,
       "regime": "trend_down",
-      "trend_strength": -1.38
+      "trend_strength": -1.43
     },
     "NZDJPY": {
-      "atr": 0.6715000000000008,
+      "atr": 0.6425000000000003,
       "bias": "bear",
-      "recent_high": 94.878,
+      "recent_high": 94.126,
       "recent_low": 91.035,
       "regime": "trend_down",
-      "trend_strength": -1.48
+      "trend_strength": -1.62
     },
     "NZDUSD": {
-      "atr": 0.004560714285714283,
+      "atr": 0.004255714285714284,
       "bias": "bear",
-      "recent_high": 0.5935,
+      "recent_high": 0.58869,
       "recent_low": 0.56261,
       "regime": "trend_down",
-      "trend_strength": -2.29
+      "trend_strength": -2.55
     },
     "USDCAD": {
-      "atr": 0.006102142857142802,
+      "atr": 0.005761428571428521,
       "bias": "bull",
       "recent_high": 1.4248,
-      "recent_low": 1.38284,
+      "recent_low": 1.38658,
       "regime": "trend_up",
-      "trend_strength": 3.07
+      "trend_strength": 3.22
     },
     "USDCHF": {
-      "atr": 0.005083571428571417,
+      "atr": 0.004917857142857133,
       "bias": "bull",
       "recent_high": 0.81395,
-      "recent_low": 0.78635,
+      "recent_low": 0.78678,
       "regime": "trend_up",
-      "trend_strength": 2.2
+      "trend_strength": 2.33
     },
     "USDJPY": {
-      "atr": 0.6189285714285688,
+      "atr": 0.5828571428571385,
       "bias": "bull",
-      "recent_high": 162.667,
-      "recent_low": 159.37,
+      "recent_high": 162.838,
+      "recent_low": 159.539,
       "regime": "trend_up",
-      "trend_strength": 1.9
+      "trend_strength": 2.08
     },
     "XAUUSD": {
-      "atr": 114.41214285714292,
+      "atr": 111.51000000000006,
       "bias": "bear",
       "recent_high": 4515.3,
       "recent_low": 3941.74,
       "regime": "trend_down",
-      "trend_strength": -1.78
+      "trend_strength": -1.88
     },
-    "_date": "2026-07-01"
+    "_date": "2026-07-02"
   }
 }

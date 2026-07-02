@@ -19,7 +19,7 @@ from urllib.request import urlopen
 
 from . import config
 
-_TFF_URL = "https://www.cftc.gov/dea/newcot/f_natfin.txt"
+_TFF_URL = "https://www.cftc.gov/dea/newcot/FinFutWk.txt"
 _HISTORY_FILE = config.LOG_DIR / "cot_history.json"
 _BIAS_FILE = config.ROOT / "cot_bias.json"
 
@@ -45,7 +45,11 @@ LOOKBACK_WEEKS = 52
 # ---------------------------------------------------------------------------
 
 def _fetch(url: str = _TFF_URL, timeout: int = 30) -> str:
-    with urlopen(url, timeout=timeout) as r:
+    import ssl, certifi
+    from urllib.request import Request
+    ctx = ssl.create_default_context(cafile=certifi.where())
+    req = Request(url, headers={"User-Agent": "Mozilla/5.0"})
+    with urlopen(req, timeout=timeout, context=ctx) as r:
         return r.read().decode("utf-8", errors="replace")
 
 
@@ -54,25 +58,33 @@ def _int(s: str) -> int:
 
 
 def parse_tff(text: str) -> dict[str, dict[str, dict]]:
-    """Parse CFTC TFF comma-delimited text.
+    """Parse CFTC TFF comma-delimited text (positional short format, no header row).
+
+    Column layout (0-indexed):
+      0  = Market_and_Exchange_Names
+      2  = Report_Date_as_YYYY-MM-DD
+      14 = Lev_Money_Positions_Long_All
+      15 = Lev_Money_Positions_Short_All
 
     Returns {ccy: {date_iso: {long, short, net}}} — only the currencies we track.
     Values are Leveraged Money (hedge fund / CTA) contract counts.
     """
-    reader = csv.DictReader(io.StringIO(text))
+    reader = csv.reader(io.StringIO(text))
     out: dict[str, dict] = {ccy: {} for ccy in _MARKET_CCY.values()}
     for row in reader:
-        name = (row.get("Market_and_Exchange_Names") or "").strip()
+        if len(row) < 16:
+            continue
+        name = row[0].strip().strip('"')
         ccy = _MARKET_CCY.get(name)
         if not ccy:
             continue
-        date = (row.get("Report_Date_as_YYYY-MM-DD") or "").strip()
-        if not date:
+        date = row[2].strip()
+        if not date or len(date) != 10:
             continue
         try:
-            longs = _int(row.get("Lev_Money_Positions_Long_All", "0"))
-            shorts = _int(row.get("Lev_Money_Positions_Short_All", "0"))
-        except ValueError:
+            longs = _int(row[14])
+            shorts = _int(row[15])
+        except (ValueError, IndexError):
             continue
         out[ccy][date] = {"long": longs, "short": shorts, "net": longs - shorts}
     return out

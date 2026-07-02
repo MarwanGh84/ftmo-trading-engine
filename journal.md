@@ -540,3 +540,29 @@ Recurring pattern (2nd time, see 2026-06-30 EOD note) — feed-degraded freeze c
 Engine blind since ~16:32 (req cap 2046/1800, feed frozen); resets 00:00 Dubai — after tonight's Trump speech (HIGH USD, 23:00-23:30 Dubai), so no auto-flatten protection for that window. Telegram alert sent recommending manual review of USDJPY before 23:00.
 Not Friday, no weekend-flat needed. Shadow edge +18pts (n=28 graded, narrowing from +35pts) — take 50%/skip 32%, still unproven at n<30.
 Lesson: 3rd feed-freeze/cap event in 3 sessions, firing progressively earlier each day — request budget (scanner/watchdog cadence) needs investigation, not just tonight's workaround.
+
+### 2026-07-02T00:01:16.801049+04:00
+CLOSED USDJPY #55424400 LOSS net $-49.06 poor=False
+
+### 2026-07-02T00:01:29.146660+04:00
+CLOSED AUDUSD #55289849 WIN net $5.46 poor=False
+
+## 2026-07-02 09:30 Dubai — Morning Brief
+Audit clean, cTrader reachable, 0 open/pending, bal $9,949.08, daily room $198.98. NFP + Unemployment Rate + Avg Hourly Earnings (USD, 12:30Z) and CHF CPI m/m (06:30Z) blackout windows published as Tier1 (−60/+45min). No trades this run.
+
+### 2026-07-02T11:05:46.231728+04:00
+PLACED: EURGBP SELL 20000u (0.20 lots) | SL 18.0p TP 60.0p | risk $49.75 (0.5%) | R:R 3.33 | worst -$52.94 :: {"orderId": 163009467, "status": "placed"}
+
+### 2026-07-02T13:38:49.800987+04:00
+PLACED: GBPAUD BUY 9000u (0.09 lots) | SL 75.0p TP 150.0p | risk $49.75 (0.5%) | R:R 2.00 | worst -$48.78 :: {"orderId": 163032942, "status": "placed"}
+
+## 2026-07-02 16:33 Dubai — NY Overlap Run
+STOPPED before analysis: MCP request cap exhausted (1830/1800 used) as of 16:33 — audit crashed with RequestCapExceeded before completing, no live data available. No new trades, no cancels attempted.
+Last known good (09:38 run): 0/5 fills, 0 poor outcomes, kill-switch clear. Open (engine-managed): EURGBP sell pending #163009467, GBPAUD buy pending #163032942 — both unaffected by this session's freeze but auto-management may also be cap-blocked for the rest of today. Manual Telegram alert sent since automated report didn't fire.
+Recurring pattern — identical cap-exhaustion hit this exact 16:33 run yesterday (2026-07-01) and flagged then as needing investigation; still unresolved. No further HIGH news windows loaded for today.
+
+## EOD 2026-07-02
+🌙 EOD [cap-hit, offline] — bal $9,949.08 (day start) | day P/L flat, 0 fills, 0 poor outcomes | open: FLAT ✅ (0 filled). Pending: EURGBP sell-lim #163009467 (expiry passed ~3h ago while blind, may be unmanaged on broker) and GBPAUD buy-lim #163032942 (expires 21:38 Dubai).
+Engine blind since 16:33 run (req cap 1934/1800); resets 00:00 Dubai. Not Friday, no weekend-flat needed. Manual Telegram sent since automated eod --report crashed (RequestCapExceeded).
+Shadow edge +19pts (n=36 graded, first read past n=30 — take 43%/skip 24% win) — narrowing from +35pts but still positive.
+Lesson: 4th consecutive session hitting request-cap exhaustion (6/30, 7/1 x2, 7/2 x2) — now bleeding into EOD and blocking order-expiry enforcement, not just analysis. Request budget (scanner/watchdog cadence) needs investigation.
