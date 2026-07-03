@@ -6,6 +6,12 @@ Goal: find at most one clean setup and let the engine execute it; manage open po
 
 0. **Pre-session context checks (read-only, 60 seconds):**
    - `~/trading/bin/ftmo shadow-stats` — how many graded samples and current filtering edge (take − skip win%). If n < 30, note it; proceed with caution — edge is statistically unproven.
+   - **Setup-type evidence (as of 2026-07-03, n=42 graded):** continuation setups are underperforming
+     badly — london_continuation 14% win (n=14), ny_pullback_continuation 22% (n=9), range_mean_reversion
+     17% (n=6) — while reversal-at-level setups outperform: london_sweep_reversal 50% (n=4),
+     ny_breakout_retest 2/2. Until the data flips: a continuation setup needs ≥3 independent confluences
+     (not the usual 2) to qualify, and sweep/rejection setups at major levels deserve first look.
+     Samples are small — treat as a thumb on the scale, not a ban.
    - `cat ~/trading/cot_bias.json` — check for any non-neutral COT signal on currencies in today's candidates. A `crowded_long` or `crowded_short` signal (≥80th / ≤20th percentile of leveraged money positioning) is a CAUTION FLAG, not a veto: avoid adding to an already-crowded direction, and tighten trail stops on positions running in the crowded direction. If the file doesn't exist yet, skip and proceed.
 1. `~/trading/bin/ftmo audit --report`. If cTrader unreachable, STOP. If kill-switch HIT,
    or trades_today (fills) ≥ 5, or poor_outcomes ≥ 2 → manage existing positions only, take no new entry,

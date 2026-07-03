@@ -60,8 +60,20 @@ def _tier(title: str) -> tuple[int, int, str]:
 
 
 def _fetch(url: str = _CALENDAR_URL, timeout: int = 20) -> list[dict]:
-    with urlopen(url, timeout=timeout) as r:
-        return json.loads(r.read().decode("utf-8", errors="replace"))
+    import time as _time
+    last_exc: Exception = RuntimeError("no attempts")
+    for attempt in range(3):
+        try:
+            with urlopen(url, timeout=timeout) as r:
+                return json.loads(r.read().decode("utf-8", errors="replace"))
+        except Exception as exc:
+            last_exc = exc
+            # 429 rate-limit: back off and retry; other errors: fail immediately
+            if "429" in str(exc) and attempt < 2:
+                _time.sleep(60 * (attempt + 1))
+            else:
+                raise
+    raise last_exc
 
 
 def _today_events(events: list[dict], today_dubai) -> list[dict]:
@@ -111,9 +123,7 @@ def run(client, state: dict) -> list[dict]:
     try:
         all_events = _fetch()
     except Exception as e:
-        msg = f"⚠️ Morning brief: ForexFactory fetch failed — {e}\nNo news windows written (engine will block all trades)."
-        telegram.send(msg)
-        raise
+        raise RuntimeError(f"ForexFactory fetch failed — {e}") from e
 
     events = _today_events(all_events, today_dubai)
     windows = _to_windows(events)

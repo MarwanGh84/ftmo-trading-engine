@@ -104,11 +104,8 @@ def _d1_summaries(client, symbols: list[str]) -> dict[str, str]:
             d = client.get_symbol_details(sym)
             pip = float(d.get("pipSize") or 0.0001)
             bid = float(d.get("bid") or 0)
-            bars = client.call("get_trendbars", {
-                "symbolName": sym, "timeframe": "d1",
-                "from": (now - timedelta(days=35)).isoformat(),
-                "to": now.isoformat(), "limit": 25,
-            }).get("bars", [])
+            from . import bars_cache
+            bars = bars_cache.get_bars(client, sym, "d1", 35, 25).get("bars", [])
             closes = [b["close"] for b in bars]
             sma20 = _sma(closes, 20)
             atr = _atr14(bars)

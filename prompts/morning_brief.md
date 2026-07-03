@@ -3,6 +3,10 @@
 Goal: set up the day. Audit the account and publish today's news blackout windows so the
 engine can enforce them. You place no trades in this run.
 
+⚠️ **NEVER run `ftmo morning-brief`** — that CLI fetches ForexFactory directly via urlopen,
+gets rate-limited (HTTP 429), and sends duplicate/error Telegrams that pollute the brief.
+Always use the `forexfactory` MCP tool (step 2) + `ftmo set-news` (step 3) instead.
+
 1. `~/trading/bin/ftmo audit --report` — confirms cTrader reachable, reconciles state,
    applies the daily reset, records day_start_balance, reports buffers to Telegram.
    If it reports cTrader unreachable, STOP (the alert already fired).

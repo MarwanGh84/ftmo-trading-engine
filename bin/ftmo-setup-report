@@ -1,0 +1,68 @@
+#!/usr/bin/env python3
+"""Weekly setup-type performance report — runs Monday 08:00 Dubai via launchd.
+
+Reads logs/shadows.json, computes graded win-rate per setup_type (take/skip),
+and Telegrams the table. Flags when total graded n >= 60 — the threshold agreed
+on 2026-07-03 for re-running the setup-type tuning analysis.
+
+Deterministic, no Claude API, no cTrader calls — zero request-budget cost.
+"""
+import json
+import sys
+from collections import defaultdict
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+
+from engine import telegram
+
+RETUNE_THRESHOLD = 60
+
+shadows_file = ROOT / "logs" / "shadows.json"
+if not shadows_file.exists():
+    telegram.send("⚠️ Setup report: logs/shadows.json missing — no data to report.")
+    sys.exit(1)
+
+try:
+    entries = json.loads(shadows_file.read_text())
+    if isinstance(entries, dict):
+        entries = entries.get("shadows", [])
+except Exception as e:
+    telegram.send(f"⚠️ Setup report: could not read shadows.json — {e}")
+    sys.exit(1)
+
+graded = [s for s in entries if s.get("result") in ("win", "loss")]
+takes = [s for s in graded if s.get("verdict") == "take"]
+skips = [s for s in graded if s.get("verdict") == "skip"]
+
+by_setup = defaultdict(list)
+for s in graded:
+    by_setup[s.get("setup_type") or "untagged"].append(s["result"] == "win")
+
+def pct(wins_list):
+    return f"{100 * sum(wins_list) / len(wins_list):.0f}%" if wins_list else "—"
+
+take_win = pct([s["result"] == "win" for s in takes])
+skip_win = pct([s["result"] == "win" for s in skips])
+
+lines = [
+    f"📐 <b>Weekly setup report</b> — {len(graded)} graded "
+    f"(take {len(takes)} · skip {len(skips)})",
+    f"TAKE win {telegram.code(take_win)}  ·  SKIP win {telegram.code(skip_win)}",
+    "",
+]
+for setup, results in sorted(by_setup.items(), key=lambda kv: -len(kv[1])):
+    lines.append(f"  {telegram.esc(setup)}: n={len(results)} win {pct(results)}")
+
+if len(graded) >= RETUNE_THRESHOLD:
+    lines += [
+        "",
+        f"🎯 <b>n ≥ {RETUNE_THRESHOLD} reached</b> — time to re-run the setup-type "
+        f"tuning analysis (ask Claude to re-check which setups to favor/ban).",
+    ]
+else:
+    lines += ["", f"Re-tune at n ≥ {RETUNE_THRESHOLD} (currently {len(graded)})."]
+
+telegram.send("\n".join(lines))
+print(f"setup-report: sent, n={len(graded)}")

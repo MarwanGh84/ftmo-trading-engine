@@ -1,66 +1,39 @@
 {
   "account_baseline": 10000.0,
   "candidates": [],
-  "candidates_time": "19:45",
+  "candidates_time": "20:02",
   "counted_positions": [],
   "daily_limit_hit": false,
   "daily_pnl": 0.0,
   "day_start_balance": 9949.08,
   "executed_signals": [
-    "2026-07-02:EURGBP:sell:0.8608",
-    "2026-07-02:GBPAUD:buy:1.9285"
+    "2026-07-03:CADJPY:sell:113.8"
   ],
   "frozen": true,
   "frozen_reason": "market data feed degraded (0 symbols quoting)",
   "frozen_sticky": false,
-  "last_run_iso": "2026-07-02T20:02:54.290894+04:00",
+  "last_run_iso": "2026-07-03T20:02:42.877014+04:00",
   "news_windows": [
     {
-      "ccy": "CHF",
-      "end_iso": "2026-07-02T07:15:00Z",
-      "event": "CPI m/m",
+      "ccy": "EUR",
+      "end_iso": "2026-07-03T08:15:00Z",
+      "event": "ECB President Lagarde Speaks",
       "kind": "high",
-      "start_iso": "2026-07-02T05:30:00Z"
+      "start_iso": "2026-07-03T07:45:00Z"
     },
     {
-      "ccy": "USD",
-      "end_iso": "2026-07-02T13:15:00Z",
-      "event": "NFP / Unemployment Rate / Avg Hourly Earnings",
+      "ccy": "GBP",
+      "end_iso": "2026-07-03T15:15:00Z",
+      "event": "BOE Gov Bailey Speaks",
       "kind": "high",
-      "start_iso": "2026-07-02T11:30:00Z"
+      "start_iso": "2026-07-03T14:45:00Z"
     }
   ],
-  "news_windows_date": "2026-07-02",
+  "news_windows_date": "2026-07-03",
   "open_positions": [],
-  "order_expiry": {
-    "163009467": "2026-07-02T13:05:45.653012+00:00",
-    "163032942": "2026-07-02T17:38:49.238316+00:00"
-  },
-  "pending_orders": [
-    {
-      "id": 163009467,
-      "label": "ftmo-engine",
-      "side": "sell",
-      "sl_pips": 18,
-      "symbol": "EURGBP",
-      "target_price": 0.8608,
-      "tp_pips": 60,
-      "type": "Limit",
-      "volume_units": 20000
-    },
-    {
-      "id": 163032942,
-      "label": "ftmo-engine",
-      "side": "buy",
-      "sl_pips": 75,
-      "symbol": "GBPAUD",
-      "target_price": 1.9285,
-      "tp_pips": 150,
-      "type": "Limit",
-      "volume_units": 9000
-    }
-  ],
-  "poor_outcomes_today": 0,
+  "order_expiry": {},
+  "pending_orders": [],
+  "poor_outcomes_today": 1,
   "scanner_alerts": {
     "AUDJPY": {
       "key": "support:111.235",
@@ -71,8 +44,8 @@
       "ts": "2026-07-01T14:08:17.988421+04:00"
     },
     "CADJPY": {
-      "key": "support:113.518",
-      "ts": "2026-07-02T15:42:50.840536+04:00"
+      "key": "support:113.33",
+      "ts": "2026-07-03T18:22:33.933266+04:00"
     },
     "EURAUD": {
       "key": "resistance:1.6603",
@@ -126,12 +99,12 @@
     }
   },
   "trade_plans": {
-    "55289849": {
-      "be_done": true,
-      "entry": 0.69131,
+    "55507689": {
+      "be_done": false,
+      "entry": 1.92835,
       "partial_done": false,
-      "risk_dist": 0.0021999999999999797,
-      "side": "sell",
+      "risk_dist": 0.007500000000000062,
+      "side": "buy",
       "trail_R": 0
     }
   },
@@ -141,146 +114,147 @@
     "2026-06-19",
     "2026-06-22",
     "2026-06-26",
-    "2026-06-30"
+    "2026-06-30",
+    "2026-07-02"
   ],
   "unreachable_streak": 0,
   "watchlist_levels": {
     "AUDJPY": {
-      "atr": 0.7466428571428564,
+      "atr": 0.783142857142856,
       "bias": "bear",
-      "recent_high": 114.25,
-      "recent_low": 111.235,
+      "recent_high": 114.22,
+      "recent_low": 111.15,
       "regime": "trend_down",
-      "trend_strength": -1.27
+      "trend_strength": -1.34
     },
     "AUDUSD": {
-      "atr": 0.004702142857142861,
+      "atr": 0.004850000000000005,
       "bias": "bear",
-      "recent_high": 0.71488,
+      "recent_high": 0.71436,
       "recent_low": 0.68652,
       "regime": "trend_down",
-      "trend_strength": -2.38
+      "trend_strength": -2.39
     },
     "CADJPY": {
-      "atr": 0.5009285714285697,
-      "bias": "bull",
+      "atr": 0.5530714285714272,
+      "bias": "bear",
       "recent_high": 115.362,
-      "recent_low": 113.518,
+      "recent_low": 113.33,
       "regime": "trend_down",
-      "trend_strength": -1.31
+      "trend_strength": -1.21
     },
     "EURAUD": {
-      "atr": 0.008750714285714294,
+      "atr": 0.008912142857142844,
       "bias": "bull",
       "recent_high": 1.66186,
       "recent_low": 1.6249,
       "regime": "trend_up",
-      "trend_strength": 1.17
+      "trend_strength": 1.23
     },
     "EURCHF": {
-      "atr": 0.003151428571428575,
+      "atr": 0.0031435714285714283,
       "bias": "bear",
       "recent_high": 0.92661,
       "recent_low": 0.91374,
       "regime": "trend_up",
-      "trend_strength": 1.38
+      "trend_strength": 1.29
     },
     "EURGBP": {
-      "atr": 0.0029928571428571383,
+      "atr": 0.003065714285714275,
       "bias": "bear",
       "recent_high": 0.86861,
-      "recent_low": 0.85657,
+      "recent_low": 0.85457,
       "regime": "range",
-      "trend_strength": -0.33
+      "trend_strength": -0.51
     },
     "EURJPY": {
-      "atr": 0.9939285714285708,
-      "bias": "bull",
+      "atr": 1.0556428571428549,
+      "bias": "bear",
       "recent_high": 186.313,
       "recent_low": 183.165,
       "regime": "range",
-      "trend_strength": -0.39
+      "trend_strength": -0.45
     },
     "EURUSD": {
-      "atr": 0.0063535714285714185,
+      "atr": 0.00681928571428571,
       "bias": "bear",
-      "recent_high": 1.16452,
+      "recent_high": 1.16444,
       "recent_low": 1.13245,
       "regime": "trend_down",
-      "trend_strength": -1.75
+      "trend_strength": -1.64
     },
     "GBPAUD": {
-      "atr": 0.011224999999999994,
+      "atr": 0.011678571428571427,
       "bias": "bull",
-      "recent_high": 1.92801,
+      "recent_high": 1.9361,
       "recent_low": 1.87881,
       "regime": "trend_up",
-      "trend_strength": 1.25
+      "trend_strength": 1.38
     },
     "GBPJPY": {
-      "atr": 1.2671428571428598,
+      "atr": 1.3222857142857163,
       "bias": "bull",
-      "recent_high": 215.932,
+      "recent_high": 216.064,
       "recent_low": 212.396,
       "regime": "range",
-      "trend_strength": -0.16
+      "trend_strength": -0.13
     },
     "GBPUSD": {
-      "atr": 0.00792142857142857,
-      "bias": "bear",
+      "atr": 0.008492142857142853,
+      "bias": "bull",
       "recent_high": 1.34831,
       "recent_low": 1.314,
       "regime": "trend_down",
-      "trend_strength": -1.43
+      "trend_strength": -1.24
     },
     "NZDJPY": {
-      "atr": 0.6425000000000003,
+      "atr": 0.6793571428571425,
       "bias": "bear",
-      "recent_high": 94.126,
+      "recent_high": 94.1,
       "recent_low": 91.035,
       "regime": "trend_down",
-      "trend_strength": -1.62
+      "trend_strength": -1.65
     },
     "NZDUSD": {
-      "atr": 0.004255714285714284,
+      "atr": 0.004409999999999993,
       "bias": "bear",
-      "recent_high": 0.58869,
+      "recent_high": 0.58846,
       "recent_low": 0.56261,
       "regime": "trend_down",
-      "trend_strength": -2.55
+      "trend_strength": -2.52
     },
     "USDCAD": {
-      "atr": 0.005761428571428521,
+      "atr": 0.0059714285714285165,
       "bias": "bull",
       "recent_high": 1.4248,
       "recent_low": 1.38658,
       "regime": "trend_up",
-      "trend_strength": 3.22
+      "trend_strength": 3.04
     },
     "USDCHF": {
-      "atr": 0.004917857142857133,
+      "atr": 0.005284999999999992,
       "bias": "bull",
       "recent_high": 0.81395,
-      "recent_low": 0.78678,
+      "recent_low": 0.78718,
       "regime": "trend_up",
-      "trend_strength": 2.33
+      "trend_strength": 2.13
     },
     "USDJPY": {
-      "atr": 0.5828571428571385,
-      "bias": "bull",
+      "atr": 0.6864999999999952,
+      "bias": "bear",
       "recent_high": 162.838,
       "recent_low": 159.539,
       "regime": "trend_up",
-      "trend_strength": 2.08
+      "trend_strength": 1.67
     },
     "XAUUSD": {
-      "atr": 111.51000000000006,
+      "atr": 114.1378571428572,
       "bias": "bear",
-      "recent_high": 4515.3,
+      "recent_high": 4481.28,
       "recent_low": 3941.74,
       "regime": "trend_down",
-      "trend_strength": -1.88
+      "trend_strength": -1.85
     },
-    "_date": "2026-07-02"
+    "_date": "2026-07-03"
   }
 }

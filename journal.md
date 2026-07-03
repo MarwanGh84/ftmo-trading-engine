@@ -566,3 +566,26 @@ Recurring pattern — identical cap-exhaustion hit this exact 16:33 run yesterda
 Engine blind since 16:33 run (req cap 1934/1800); resets 00:00 Dubai. Not Friday, no weekend-flat needed. Manual Telegram sent since automated eod --report crashed (RequestCapExceeded).
 Shadow edge +19pts (n=36 graded, first read past n=30 — take 43%/skip 24% win) — narrowing from +35pts but still positive.
 Lesson: 4th consecutive session hitting request-cap exhaustion (6/30, 7/1 x2, 7/2 x2) — now bleeding into EOD and blocking order-expiry enforcement, not just analysis. Request budget (scanner/watchdog cadence) needs investigation.
+
+## 2026-07-03 09:36 Dubai — Morning Brief Run
+Audit clean: bal $9,949.08, daily room $184.84, overall room $934.94, 0/5 trades, req 96/1800. No HIGH-impact news today (USD holiday); blackout set for EUR/GBP CB-speaker windows only. `ftmo morning-brief` auto-path failed silently (calendar fetch exception, exit 1) — windows set manually via `set-news` + brief sent manually via telegram.send(); worth checking if raw FF JSON URL is network-blocked for this env.
+
+### 2026-07-03T11:04:53.924474+04:00
+PLACED: CADJPY SELL 40000u (0.40 lots) | SL 20.0p TP 50.0p | risk $49.75 (0.5%) | R:R 2.50 | worst -$55.95 :: {"orderId": 163187741, "status": "placed"}
+
+## 2026-07-03 13:38 Dubai — Midday Run
+Audit clean, req 96→~110/1800. Open: GBPAUD buy -$23.88, pending CADJPY sell-lim @113.80 (both engine-managed, both from earlier runs today). Scanner candidate CADJPY (near 20D low) already covered by existing pending order — no new action.
+Full 17-pair scan: shortlisted USDCAD/EURCHF/GBPJPY (D1 trend + near 20D level) and EURGBP (D1 downtrend at 20D low) — all H4 choppy/tight-range with no clean rejection or trigger candle, logged as shadow skips (conf 30-35). GBP HIGH news (Bailey 18:45-19:15 Dubai) ~5h out; weekend-flat tonight 23:00 Dubai leaves thin runway for new entries anyway. No new trades.
+
+## 2026-07-03 16:33 Dubai — NY Overlap Run (final window)
+Audit clean: bal $9,949.08, daily room $177.86, overall room $927.96, 0/5 fills today, req 1336/1800. Open GBPAUD buy -$21.12 (engine-managed), pending CADJPY sell-lim @113.80 unchanged. Only scanner candidate (CADJPY near 20D low) already covered by existing order.
+Full 17-pair top-down scan: USD still on holiday (thin liquidity); most majors range-bound (EURUSD/AUDUSD/NZDJPY/AUDJPY) or mid-trend without a level test (GBPUSD/NZDUSD/EURAUD near highs, USDCAD/EURGBP mid-drift). Two continuation candidates re-checked from midday shortlist — USDCHF (H1 still chopping 0.8014-0.8034, no trigger) and GBPJPY (H4 meandering 214.6-215.4, no bounce confirmation) — both logged as shadow skips (conf 30-32). BOE Bailey speaks 19:00 Dubai (medium impact); weekend-flat tonight 23:00 leaves ~6.5h runway, not worth forcing a fresh entry into. No new trades — final run of the week ends flat aside from existing engine-managed positions.
+
+### 2026-07-03T19:05:53.291032+04:00
+CLOSED GBPAUD #55507689 LOSS net $-24.06 poor=True
+
+## EOD 2026-07-03
+🌙 EOD [cap-hit, offline] — bal $9,949.08 (day start) | fills today 0 | poor 1 (GBPAUD carried from 7/2, closed -$24.06) | CADJPY sell-lim expired unfilled ~17:05 | open: FLAT (last known-good, not live-reconfirmed).
+Engine blind: req cap 1818/1800 + feed degraded as of ~20:06; resets 00:00 Dubai. Friday weekend-flat check could not be reconfirmed live — manual Telegram sent recommending user verify zero open positions in cTrader tonight. `ftmo stats --report` (weekly review) also blocked by cap, not run.
+Shadow edge +17pts (n=42 graded) — narrowing from +35pts, still unproven. No rail refusals today.
+Lesson: 5th+ session hitting the identical cap/freeze pattern in this exact evening window — request budget (scanner/watchdog cadence) still needs investigation, now recurring nightly.

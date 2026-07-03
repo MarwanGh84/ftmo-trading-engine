@@ -2,15 +2,21 @@
 from engine import cot
 
 
-# Minimal TFF CSV that matches the real CFTC column layout
-_SAMPLE_TFF = """\
-Market_and_Exchange_Names,As_of_Date_in_Form_YYMMDD,Report_Date_as_YYYY-MM-DD,Lev_Money_Positions_Long_All,Lev_Money_Positions_Short_All
-EURO FX - CHICAGO MERCANTILE EXCHANGE,260101,2026-01-02,80000,40000
-EURO FX - CHICAGO MERCANTILE EXCHANGE,260108,2026-01-09,85000,38000
-BRITISH POUND STERLING - CHICAGO MERCANTILE EXCHANGE,260101,2026-01-02,30000,50000
-BRITISH POUND STERLING - CHICAGO MERCANTILE EXCHANGE,260108,2026-01-09,28000,55000
-UNKNOWN MARKET - SOME EXCHANGE,260101,2026-01-02,99999,99999
-"""
+# Minimal TFF rows matching the real CFTC positional short format (no header row):
+# col 0 = market name, col 2 = report date, col 14 = Lev Money long, col 15 = Lev Money short.
+def _row(name: str, date_yymmdd: str, date_iso: str, longs: int, shorts: int) -> str:
+    filler = ["0"] * 7   # cols 7-13
+    return ",".join([f'"{name}"', date_yymmdd, date_iso, "090741", "CME ", "00", "090 ",
+                     *filler, str(longs), str(shorts), "0", "0"])
+
+
+_SAMPLE_TFF = "\n".join([
+    _row("EURO FX - CHICAGO MERCANTILE EXCHANGE", "260101", "2026-01-02", 80000, 40000),
+    _row("EURO FX - CHICAGO MERCANTILE EXCHANGE", "260108", "2026-01-09", 85000, 38000),
+    _row("BRITISH POUND STERLING - CHICAGO MERCANTILE EXCHANGE", "260101", "2026-01-02", 30000, 50000),
+    _row("BRITISH POUND STERLING - CHICAGO MERCANTILE EXCHANGE", "260108", "2026-01-09", 28000, 55000),
+    _row("UNKNOWN MARKET - SOME EXCHANGE", "260101", "2026-01-02", 99999, 99999),
+]) + "\n"
 
 
 def test_parse_tff_known_currencies():
@@ -29,7 +35,7 @@ def test_parse_tff_net_calculation():
 
 def test_parse_tff_deduplicates_dates():
     # Same date twice — second should overwrite or first should stand; no duplicates as keys
-    duped = _SAMPLE_TFF + "EURO FX - CHICAGO MERCANTILE EXCHANGE,260101,2026-01-02,1,1\n"
+    duped = _SAMPLE_TFF + _row("EURO FX - CHICAGO MERCANTILE EXCHANGE", "260101", "2026-01-02", 1, 1) + "\n"
     result = cot.parse_tff(duped)
     assert len(result["EUR"]) == 2   # still only 2 unique dates
 

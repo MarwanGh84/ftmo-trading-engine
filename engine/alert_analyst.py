@@ -135,11 +135,8 @@ def _build_prompt(client, symbol: str, level: float, near: str, state: dict) -> 
     bid = float(sym_d.get("bid") or level)
     ask = float(sym_d.get("ask") or level)
 
-    d1_raw = client.call("get_trendbars", {
-        "symbolName": symbol, "timeframe": "d1",
-        "from": (now - timedelta(days=30)).isoformat(),
-        "to": now.isoformat(), "limit": 25,
-    }).get("bars", [])
+    from . import bars_cache
+    d1_raw = bars_cache.get_bars(client, symbol, "d1", 30, 25).get("bars", [])
 
     h1_raw = client.call("get_trendbars", {
         "symbolName": symbol, "timeframe": "h1",

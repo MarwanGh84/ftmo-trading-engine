@@ -468,13 +468,11 @@ def cmd_scan(args) -> int:
 
 
 def cmd_bars(args) -> int:
-    """Serve OHLC bars to the analysis run so it never calls cTrader tools directly."""
-    from datetime import datetime, timezone, timedelta
+    """Serve OHLC bars to the analysis run so it never calls cTrader tools directly.
+    D1/H4 are served from a short-TTL disk cache to protect the daily request budget."""
+    from . import bars_cache
     client = McpClient()
-    to = datetime.now(timezone.utc)
-    frm = to - timedelta(days=args.days)
-    r = client.call("get_trendbars", {"symbolName": args.symbol.upper(), "timeframe": args.timeframe,
-                                       "from": frm.isoformat(), "to": to.isoformat(), "limit": args.limit})
+    r = bars_cache.get_bars(client, args.symbol.upper(), args.timeframe, args.days, args.limit)
     print(json.dumps(r, default=str))
     return 0
 
