@@ -589,3 +589,19 @@ CLOSED GBPAUD #55507689 LOSS net $-24.06 poor=True
 Engine blind: req cap 1818/1800 + feed degraded as of ~20:06; resets 00:00 Dubai. Friday weekend-flat check could not be reconfirmed live — manual Telegram sent recommending user verify zero open positions in cTrader tonight. `ftmo stats --report` (weekly review) also blocked by cap, not run.
 Shadow edge +17pts (n=42 graded) — narrowing from +35pts, still unproven. No rail refusals today.
 Lesson: 5th+ session hitting the identical cap/freeze pattern in this exact evening window — request budget (scanner/watchdog cadence) still needs investigation, now recurring nightly.
+
+## 2026-07-06 08:00 Dubai — Weekly Plan Run
+Audit clean: bal $9,925.02, daily room $198.50, overall room $925.02, phase challenge_phase_1, req 390/1800. HIGH-impact this week: Mon ISM Services PMI 18:00, Wed RBNZ decision 06:00/press conf 07:00 + FOMC Minutes 22:00, Fri CAD jobs 16:30 — Wed and Fri PM are the caution windows.
+17-pair D1 bias set (mix of trend_up: USDJPY/USDCAD/USDCHF/EURAUD/GBPAUD; trend_down: AUDUSD/NZDUSD/AUDJPY/NZDJPY; range: EURUSD/GBPUSD/EURJPY/GBPJPY/EURGBP/CADJPY/EURCHF; high-vol bounce: XAUUSD). Full levels sent to Telegram.
+Last week: 7 trades, 28.6% win, net −$26.16, PF 0.84 — only clean winner XAUUSD daily_level_rejection. Shadow filtering edge +17pts (n=42 graded) — still early but consistent with prior weeks (was +19, +17 the last two reads). COT all-neutral (data stale at 1wk history, 2026-06-23) — no positioning signal, technicals lead this week.
+
+## 2026-07-06 09:30 Dubai — Morning Brief
+Audit clean, cTrader reachable, 0 open/pending. One blackout today: USD ISM Services PMI 13:30–14:30Z. No trades this run.
+
+### 2026-07-06T13:43:51.555836+04:00
+PLACED: GBPJPY BUY 18000u (0.18 lots) | SL 35.0p TP 70.0p | risk $39.70 (0.4%) | R:R 2.00 | worst -$42.27 :: {"orderId": 163326502, "status": "placed"}
+
+## EOD 2026-07-06
+🌙 EOD [cap-hit, offline] — bal $9,925.02 (day start) | fills 0 | poor 0 | GBPJPY buy-lim #163326502 @216.10 expiry 19:43 Dubai already passed while blind — status unconfirmed, flagged to user for manual cTrader check. No other open positions (last known-good, not live-reconfirmed).
+Engine blind: req cap 1800/1800 hit + feed degraded as of ~20:06 Dubai; resets 00:00 Dubai. Monday, no weekend-flat needed. `shadow-stats` (local-only, not cap-gated) ran clean: edge +9pts (n=48 graded, take 30%/skip 21%) — narrowing further from +17 this morning and +19/+17 the prior two weeks, worth watching closely.
+Lesson: 6th+ consecutive evening session hitting the identical request-cap/feed-freeze pattern — now consistently blocking EOD reconciliation and order-expiry enforcement; request budget (scanner/watchdog cadence) still needs root-cause investigation, not a nightly workaround.
