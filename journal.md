@@ -605,3 +605,31 @@ PLACED: GBPJPY BUY 18000u (0.18 lots) | SL 35.0p TP 70.0p | risk $39.70 (0.4%) |
 🌙 EOD [cap-hit, offline] — bal $9,925.02 (day start) | fills 0 | poor 0 | GBPJPY buy-lim #163326502 @216.10 expiry 19:43 Dubai already passed while blind — status unconfirmed, flagged to user for manual cTrader check. No other open positions (last known-good, not live-reconfirmed).
 Engine blind: req cap 1800/1800 hit + feed degraded as of ~20:06 Dubai; resets 00:00 Dubai. Monday, no weekend-flat needed. `shadow-stats` (local-only, not cap-gated) ran clean: edge +9pts (n=48 graded, take 30%/skip 21%) — narrowing further from +17 this morning and +19/+17 the prior two weeks, worth watching closely.
 Lesson: 6th+ consecutive evening session hitting the identical request-cap/feed-freeze pattern — now consistently blocking EOD reconciliation and order-expiry enforcement; request budget (scanner/watchdog cadence) still needs root-cause investigation, not a nightly workaround.
+
+## 2026-07-07 09:30 Dubai — Morning Brief
+Audit clean, cTrader reachable, 0 open/pending. No HIGH-impact FX news today; published two medium blackouts: CAD Ivey PMI 13:30–14:30Z, GBP BOE Bailey speech 10:15–10:45Z. No trades this run.
+
+## 2026-07-07 11:00 Dubai — London Open Session
+Audit clean, 0 open/pending, 0/5 fills. Scanner flagged GBPJPY (bull, near 20D high, failed breakout back into range) and EURGBP (bear, coiling at 20D low, no decisive break) — both only 2 confluences, below the 3-confluence bar continuation setups now need. Scanned full 17-pair watchlist: broad JPY-cross/XAUUSD rally pullbacks unresolved, majors mid-range. No trade; 3 candidates (GBPJPY, EURGBP, XAUUSD) logged to shadow journal.
+
+### 2026-07-07T13:38:11.540632+04:00
+PLACED: GBPJPY BUY 10000u (0.10 lots) | SL 75.0p TP 145.0p | risk $49.63 (0.5%) | R:R 1.93 | worst -$48.30 :: {"orderId": 163491667, "status": "placed"}
+
+### 2026-07-07T14:24:14.712127+04:00
+CLOSED GBPJPY #55702535 SCRATCH net $4.07 poor=True
+
+### 2026-07-07T16:40:31.689475+04:00
+PLACED: EURGBP SELL 30000u (0.30 lots) | SL 6.0p TP 19.0p | risk $24.82 (0.25%) | R:R 3.17 | worst -$32.12 :: {"orderId": 163517577, "status": "placed"}
+
+### 2026-07-07T17:59:00.238376+04:00
+CLOSED EURGBP #55713552 LOSS net $-25.18 poor=True
+
+## EOD 2026-07-07
+🌙 <b>EOD — Tue 07 Jul</b>
+Balance <code>$9903.91</code>  ·  P/L <code>−$21.11</code>
+Trades <code>2/5</code>  ·  Poor <code>2/2</code>
+Positions  <code>flat</code>
+
+## 2026-07-07 20:00 Dubai — EOD Review
+Bal $9,903.91 (day start $9,925.02), P/L −$21.11, 2/5 fills, 2/2 poor — stop-after-2-poor rail active, correctly no further trades placed. Both had SL at entry, correct sizing (0.5%/0.25%), R:R 1.93 & 3.17 (≥1.5 min) — process was clean, just an unprofitable day. Flat, no pending orders — no weekend/CB carry risk (not Friday).
+Shadow edge +7pts (n=53 graded, take 30%/skip 23%) — continues narrowing (was +9 Mon, +17 this morning, +17/+19 prior weeks). Lesson: this is now a 4-read consecutive decline in the filtering edge — worth a deliberate look at whether skip-criteria are getting too loose or the take-sample is too thin (n=10) to trust yet.
