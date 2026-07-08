@@ -633,3 +633,25 @@ Positions  <code>flat</code>
 ## 2026-07-07 20:00 Dubai — EOD Review
 Bal $9,903.91 (day start $9,925.02), P/L −$21.11, 2/5 fills, 2/2 poor — stop-after-2-poor rail active, correctly no further trades placed. Both had SL at entry, correct sizing (0.5%/0.25%), R:R 1.93 & 3.17 (≥1.5 min) — process was clean, just an unprofitable day. Flat, no pending orders — no weekend/CB carry risk (not Friday).
 Shadow edge +7pts (n=53 graded, take 30%/skip 23%) — continues narrowing (was +9 Mon, +17 this morning, +17/+19 prior weeks). Lesson: this is now a 4-read consecutive decline in the filtering edge — worth a deliberate look at whether skip-criteria are getting too loose or the take-sample is too thin (n=10) to trust yet.
+
+## 2026-07-08 09:33 Dubai — Morning Brief
+Bal $9,903.91, daily room $198.08, overall room $903.91. Flat, no pending orders. NZD RBNZ decision (already passed by run time) + USD FOMC Minutes 17:00–18:45Z published as blackout windows. No trades this run.
+
+### 2026-07-08T11:08:33.346208+04:00
+PLACED: GBPJPY BUY 10000u (0.10 lots) | SL 40.0p TP 95.0p | risk $24.76 (0.25%) | R:R 2.37 | worst -$26.99 :: {"orderId": 163654427, "status": "placed"}
+
+### 2026-07-08T13:39:00.784693+04:00
+PLACED: USDJPY BUY 21000u (0.21 lots) | SL 30.0p TP 47.0p | risk $39.62 (0.4%) | R:R 1.57 | worst -$41.10 :: {"orderId": 163688233, "status": "placed"}
+
+### 2026-07-08T15:39:29.083733+04:00
+CLOSED GBPJPY #55770633 SCRATCH net $1.04 poor=True
+
+## 2026-07-08 16:33 Dubai — NY Overlap Run (final session)
+Audit clean: bal $9,904.95, daily room $198.08, overall room $904.95, 1/5 fills, 1/2 poor. Open: flat. Pending: USDJPY buy-limit @162.35 (ord 163688233), untouched. Scanner candidates: USDJPY (already have exposure, skipped), GBPJPY (bull, near 20D high), EURGBP (bear, near 20D low).
+GBPJPY: D1 uptrend but H1 dead-flat chop 216.4-216.9 for 24h, no clean pullback level, 217.2 resistance overhead caps R:R — and already traded+scratched GBPJPY once today. EURGBP: D1 downtrend intact but H1 tightly chopping 0.8538-0.8555 near the 20D low, no broken-support-retest level formed yet. Wider scan: USDCHF extended at highs (chasing), USDCAD and XAUUSD both threw sharp reversal candles on the latest H4 bar — broad USD/risk wobble ahead of FOMC Minutes 17:00Z, not a clean moment to enter fresh. No new trade — both shortlisted candidates shadow-logged as skips.
+
+## 2026-07-08 20:00 Dubai — EOD Review
+Engine blind: request cap 1808/1800 hit ~20:04, all cTrader calls refused (audit/eod/watchdog). Last known-good (16:33): bal $9,904.95, P/L +$1.04, 1/5 fills, 1/2 poor, flat, pending USDJPY buy-limit @162.35 (#163688233, expiry ~20:39) unconfirmed post-expiry — flagged for manual check. Not Friday, no weekend/CB carry risk.
+GBPJPY trade today had SL at entry, correct sizing (0.25%), R:R 2.37, clean process, scratched/poor.
+Shadow edge +4pts (n=59), 4th consecutive decline (17→9→7→4) — worth reviewing skip criteria.
+Lesson: recurring evening cap-hit (same as 07-06); watchdog alone (~1728 calls/day at 300s cadence) is exhausting the budget — root-cause fix still outstanding.
