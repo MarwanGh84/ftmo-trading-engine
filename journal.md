@@ -655,3 +655,23 @@ Engine blind: request cap 1808/1800 hit ~20:04, all cTrader calls refused (audit
 GBPJPY trade today had SL at entry, correct sizing (0.25%), R:R 2.37, clean process, scratched/poor.
 Shadow edge +4pts (n=59), 4th consecutive decline (17→9→7→4) — worth reviewing skip criteria.
 Lesson: recurring evening cap-hit (same as 07-06); watchdog alone (~1728 calls/day at 300s cadence) is exhausting the budget — root-cause fix still outstanding.
+
+## 2026-07-09 09:30 Dubai — Morning Brief
+Audit clean: bal $9,904.95, daily room $198.10, overall room $904.95, flat, no pending orders. No HIGH-impact events today; only notable medium USD Unemployment Claims 12:30Z published as blackout (12:15-12:45Z). No trades this run.
+
+### 2026-07-09T11:05:35.576266+04:00
+PLACED: GBPJPY BUY 13000u (0.13 lots) | SL 30.0p TP 60.0p | risk $24.76 (0.25%) | R:R 2.00 | worst -$27.15 :: {"orderId": 163833245, "status": "placed"}
+
+## 2026-07-09 13:38 Dubai — Midday London Run
+Audit clean: bal $9,904.95, daily room $198.10, overall room $904.95, 0/5 fills, 0/2 poor. Flat except GBPJPY buy-limit @217.65 (ord 163833245, from 11:05 run) resting untouched. Scanner candidates GBPAUD (bull, 20D high) and EURGBP (bear, 20D low) both shortlisted but skipped — extended continuation entries, no fresh GBP/AUD/EUR catalyst today, R:R/confluence fell short of the 3-confluence bar for continuation setups. Wider scan found a broad JPY+CHF weakness theme (USDJPY/EURJPY/CADJPY/AUDJPY/NZDJPY/USDCHF/EURCHF all pressing highs) but all extended/chasing with no clean pullback — GBPJPY already covers that theme. No new trade.
+
+## 2026-07-09 16:33 Dubai — NY Overlap Run (final session)
+Audit clean: bal $9,904.95, day P/L -$6.90, 1/5 fills, 0/2 poor. Open: GBPJPY buy (from 11:05, engine-managed, floating -$6.90). No HIGH-impact news remaining today (USD Unemployment Claims already passed, in-line). Only scanner candidate GBPJPY (bull, near 20D high) — already have exposure there, skipped. Full 17-pair scan: most majors mid-range/choppy (EURUSD, AUDUSD, USDCAD, AUDJPY, EURAUD, EURCHF, USDCHF); trending pairs (GBPUSD, USDJPY, GBPAUD, CADJPY, NZDJPY, XAUUSD) all mid-pullback continuation with only 2 confluences, short of the 3-confluence bar; EURGBP bounced off a fresh (2-day-old) 120D low inside a strong downtrend — not a tested level, likely dead-cat bounce. Shortlisted GBPUSD/USDJPY/GBPAUD/EURGBP shadow-logged as skips. No new trade.
+
+### 2026-07-09T16:57:49.167487+04:00
+CLOSED GBPJPY #55845301 LOSS net $-24.99 poor=True
+
+## 2026-07-09 20:00 Dubai — EOD Review
+Engine blind: request cap 1830/1800 hit ~20:06, audit/eod both refused. Last known-good (16:33): bal $9,904.95; GBPJPY (11:05 entry, SL@entry, 0.25% risk, R:R 2.00) closed 16:57 LOSS net -$24.99, poor=True — clean process, unprofitable outcome. 1/5 fills, 1/2 poor, flat, no pending orders. Not Friday, no weekend/CB carry risk.
+Shadow edge +10pts (n=64 graded, take 33%/skip 23%) — reverses the 4-run decline (17→9→7→4→10), reported to Telegram directly since eod couldn't run.
+Lesson: 3rd evening cap-hit this week (07-06, 07-08, 07-09) — root-cause (watchdog polling cadence) still unresolved; worth reducing scan/watchdog frequency or raising the cap deliberately rather than absorbing nightly blackouts.
