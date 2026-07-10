@@ -675,3 +675,21 @@ CLOSED GBPJPY #55845301 LOSS net $-24.99 poor=True
 Engine blind: request cap 1830/1800 hit ~20:06, audit/eod both refused. Last known-good (16:33): bal $9,904.95; GBPJPY (11:05 entry, SL@entry, 0.25% risk, R:R 2.00) closed 16:57 LOSS net -$24.99, poor=True — clean process, unprofitable outcome. 1/5 fills, 1/2 poor, flat, no pending orders. Not Friday, no weekend/CB carry risk.
 Shadow edge +10pts (n=64 graded, take 33%/skip 23%) — reverses the 4-run decline (17→9→7→4→10), reported to Telegram directly since eod couldn't run.
 Lesson: 3rd evening cap-hit this week (07-06, 07-08, 07-09) — root-cause (watchdog polling cadence) still unresolved; worth reducing scan/watchdog frequency or raising the cap deliberately rather than absorbing nightly blackouts.
+
+## 2026-07-10 09:30 Dubai — Morning Brief
+Audit clean: bal $9,879.96, daily room $197.60, overall room $879.96, flat, no pending orders. Only HIGH-impact event today: CAD Employment Change + Unemployment Rate 12:30Z, published as blackout 12:00-13:00Z. No trades this run.
+
+## 2026-07-10 11:00 Dubai — London Open Run
+Audit clean: bal $9,879.96, day P/L $0.00, 0/5 fills, 0/2 poor, flat, no pending orders. Shadow edge +4pts (n=68, thin/unproven). COT all neutral. Scanner candidates GBPUSD (bull, 20D high), EURGBP (bear, 20D low), GBPAUD (bull, 20D high) all shortlisted but skipped: GBPUSD only 34 pips from resistance (poor R:R, 2 confluences short of the 3 needed for continuation); EURGBP tight chop right at support with no breakdown/rejection trigger; GBPAUD hasn't even tested its 20D high intraday yet. Full 17-pair scan found a broad JPY-strength theme (GBPJPY/EURJPY/AUDJPY/CADJPY/NZDJPY all pulling back from highs in the last 2h, likely tied to the strong JPY PPI print) but GBPJPY is a falling knife with no base and NZDJPY's reversal has no defined structure — both skipped. Rest of watchlist mid-range, no extreme touches. No new trade — five shortlisted candidates shadow-logged as skips.
+
+### 2026-07-10T13:42:14.626251+04:00
+PLACED: NZDUSD BUY 14000u (0.14 lots) | SL 35.0p TP 63.0p | risk $49.40 (0.5%) | R:R 1.80 | worst -$51.66 :: {"orderId": 164017650, "status": "placed"}
+
+## 2026-07-10 16:33 Dubai — NY Overlap Run (final window)
+Audit clean: bal $9,879.96, day P/L $0.00, 0/5 fills, 0/2 poor. NZDUSD buy-limit still resting (0.5735, unfilled). Scanner re-flagged EURGBP (bear, 20D low) and GBPAUD (bull, 20D high) — both skipped again: EURGBP broke its H1 range to a fresh low at 10:00Z but hasn't retraced for a retest entry (chasing); GBPAUD still capped just under 1.9361 with no breakout/retest yet. Full watchlist re-scanned, nothing else at an extreme. No new trade — day ends flat aside from the one resting NZDUSD order.
+
+## 2026-07-10 20:00 Dubai — EOD Review
+Engine blind: request cap 1840/1800 hit ~20:03, eod/stats both refused. Last known-good (16:33): bal $9,879.96 (day start), day P/L $0.00, 0/5 fills, 0/2 poor. Open: FLAT (watchdog equity unchanged since 16:33, confirms no fill). Pending: NZDUSD buy-limit #164017650 @0.5735 (from 13:42 entry, expiry ~19:42) — no confirmed broker cancel logged; state.json shows it cleared but unconfirmed while blind, flagged for Monday audit reconciliation before any new trade.
+Friday: account flat for the weekend (no forced-close needed); weekly `stats --report` also cap-blocked tonight, weekly performance review deferred to next successful run.
+Shadow edge +5pts (n=69 graded, take 29%/skip 24%) — thin sample, flat vs this morning's +4.
+Lesson: 4th evening cap-hit this week (07-06, 07-08, 07-09, 07-10) — recurring, root cause (watchdog/scan polling cadence exhausting 1800/day budget) still unresolved; worth a deliberate fix next week (reduce cadence or raise cap).
