@@ -1,51 +1,51 @@
 {
-  "updated": "2026-07-06T04:05:44.508298+00:00",
+  "updated": "2026-07-13T04:59:22.587175+00:00",
   "new_records_added": 0,
   "currencies": {
     "AUD": {
-      "date": "2026-06-23",
-      "net": 39111,
-      "long": 69043,
-      "short": 29932,
-      "percentile": 50.0,
-      "signal": "neutral",
-      "weeks_of_history": 1
+      "date": "2026-07-07",
+      "net": 29683,
+      "long": 59300,
+      "short": 29617,
+      "percentile": 0.0,
+      "signal": "crowded_short",
+      "weeks_of_history": 2
     },
     "CAD": {
-      "date": "2026-06-23",
-      "net": -83377,
-      "long": 32530,
-      "short": 115907,
-      "percentile": 50.0,
-      "signal": "neutral",
-      "weeks_of_history": 1
+      "date": "2026-07-07",
+      "net": -85957,
+      "long": 38249,
+      "short": 124206,
+      "percentile": 0.0,
+      "signal": "crowded_short",
+      "weeks_of_history": 2
     },
     "CHF": {
-      "date": "2026-06-23",
-      "net": -13816,
-      "long": 7454,
-      "short": 21270,
-      "percentile": 50.0,
-      "signal": "neutral",
-      "weeks_of_history": 1
+      "date": "2026-07-07",
+      "net": -7218,
+      "long": 10944,
+      "short": 18162,
+      "percentile": 100.0,
+      "signal": "crowded_long",
+      "weeks_of_history": 2
     },
     "EUR": {
-      "date": "2026-06-23",
-      "net": -15410,
-      "long": 108150,
-      "short": 123560,
-      "percentile": 50.0,
-      "signal": "neutral",
-      "weeks_of_history": 1
+      "date": "2026-07-07",
+      "net": -45461,
+      "long": 87460,
+      "short": 132921,
+      "percentile": 0.0,
+      "signal": "crowded_short",
+      "weeks_of_history": 2
     },
     "JPY": {
-      "date": "2026-06-23",
-      "net": -97092,
-      "long": 90764,
-      "short": 187856,
-      "percentile": 50.0,
-      "signal": "neutral",
-      "weeks_of_history": 1
+      "date": "2026-07-07",
+      "net": -90083,
+      "long": 84990,
+      "short": 175073,
+      "percentile": 100.0,
+      "signal": "crowded_long",
+      "weeks_of_history": 2
     }
   }
 }

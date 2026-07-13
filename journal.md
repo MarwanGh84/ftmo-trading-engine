@@ -693,3 +693,25 @@ Engine blind: request cap 1840/1800 hit ~20:03, eod/stats both refused. Last kno
 Friday: account flat for the weekend (no forced-close needed); weekly `stats --report` also cap-blocked tonight, weekly performance review deferred to next successful run.
 Shadow edge +5pts (n=69 graded, take 29%/skip 24%) — thin sample, flat vs this morning's +4.
 Lesson: 4th evening cap-hit this week (07-06, 07-08, 07-09, 07-10) — recurring, root cause (watchdog/scan polling cadence exhausting 1800/day budget) still unresolved; worth a deliberate fix next week (reduce cadence or raise cap).
+
+## 2026-07-13 08:00 Dubai — Weekly Plan
+Audit clean: bal $9,879.96, daily room $197.60, overall room $879.96, flat, 0 pending (last week's NZDUSD resting order confirmed gone, no discrepancy). Week's risk events: US CPI Tue 16:30, US PPI + BOC rate decision Wed 16:30-18:30, UK GDP Thu 10:00. COT: EUR/AUD/CAD crowded-short, JPY/CHF crowded-long (all stretched, squeeze-risk flags, not overrides).
+Last week: 11 trades, 36% WR, net -$71.22; edge concentrated in conf≥70 setups (+$77 on 2) vs conf 60-69 (-$123 on 8) — lean tighter this week. Shadow n=69 (≥30 threshold reached): TAKE 29%/SKIP 24% WR, edge only +5pts — both weak, filter barely beats coinflip, don't loosen the bar.
+
+## 2026-07-13 09:30 Dubai — Morning Brief
+Audit clean: bal $9,879.96, daily room $197.60, overall room $879.96, flat, 0 pending. No HIGH-impact FX news today (only low-impact speakers/CNY data) — published empty blackout list.
+
+### 2026-07-13T11:05:52.367542+04:00
+PLACED: GBPAUD BUY 14000u (0.14 lots) | SL 40.0p TP 71.0p | risk $39.52 (0.4%) | R:R 1.77 | worst -$41.43 :: {"orderId": 164173988, "status": "placed"}
+
+### 2026-07-13T13:38:38.809691+04:00
+PLACED: GBPJPY BUY 20000u (0.20 lots) | SL 40.0p TP 135.0p | risk $49.40 (0.5%) | R:R 3.37 | worst -$53.33 :: {"orderId": 164195494, "status": "placed"}
+
+## 2026-07-13 16:33 Dubai — NY Overlap Session
+Audit clean: 1/5 fills, 0/2 poor, no kill-switch. Existing: GBPAUD open (+$5.91) and GBPJPY pending, both engine-managed. Full 17-pair scan: majors mostly mid-range, no clean level. Scanner flagged CADJPY/NZDJPY/EURCHF (all range-regime bull-near-resistance) — none qualified: NZDJPY/CADJPY are chasing minor 20D-high breakouts with no retest yet (CADJPY also counter to the larger 3-month downtrend); EURCHF short is capped by COT (EUR crowded_short + CHF crowded_long, both against adding more). EURGBP (sitting at 120D low, clean D1 downtrend) logged as a pullback-continuation watch but hasn't rallied into the 0.8550 rejection zone yet. All three logged to shadow journal as skips. No new trade this session.
+
+### 2026-07-13T18:13:10.187875+04:00
+CLOSED GBPAUD #55987058 SCRATCH net $-0.12 poor=True
+
+## 2026-07-13 20:00 Dubai — EOD Review
+Engine blind: request cap 1800/1800 hit ~20:06, audit/eod refused — 5th evening this week (07-06, 07-08, 07-09, 07-10, 07-13), root cause (watchdog/scan polling cadence) still unresolved. Last known-good: bal $9,879.96, flat, 1/5 fills (GBPAUD closed 18:13 SCRATCH -$0.12, poor=True), GBPJPY buy-limit #164195494 still pending @216.55. Monday — no weekend/CB carry risk. Shadow edge +9pts (n=80, take 29%/skip 20%), thin but consistent. Manually Telegram-reported since eod couldn't run; Sheet not updated (no reconciled snapshot to push).

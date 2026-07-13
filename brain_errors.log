@@ -114,3 +114,22 @@ H1 last 12 bars (oldest first, most recent last):
   ?  O=0.85240 H=0.85253 L=0.85190 C=0.85231
   ?  O=0.85213 H=0.85255 L=0.85213 C=0.85243
   ?  O=0.85244 H=0.85247 L=0.8
+
+=== 2026-07-13T18:24:07 ===
+ERROR: Expecting value: line 1 column 1 (char 0)
+RAW (1517 chars): Looking at this setup carefully:
+
+**Setup type**: resistance_fade (price at resistance 114.777, D1 bias=bull) — but wait, resistance_fade requires D1 bear trend. D1 bias is **bull**, so resistance_fade is counter-trend. This would be a SELL against a bull D1 — that fails Gate 1.
+
+**Could it be break
+PROMPT (first 400 chars):
+ALERT: CADJPY resistance at 114.77700
+Current: bid=114.78500 ask=114.79600 spread=1.1p
+
+D1: bias=bull, SMA20=114.12260, ATR14=53p, last_close=114.24600
+
+H1 last 12 bars (oldest first, most recent last):
+  ?  O=114.37800 H=114.43600 L=114.36200 C=114.39500
+  ?  O=114.39400 H=114.44900 L=114.38300 C=114.44500
+  ?  O=114.44400 H=114.46200 L=114.42100 C=114.45000
+  ?  O=114.45100 H=114.62100 L=114.415
