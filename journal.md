@@ -715,3 +715,22 @@ CLOSED GBPAUD #55987058 SCRATCH net $-0.12 poor=True
 
 ## 2026-07-13 20:00 Dubai — EOD Review
 Engine blind: request cap 1800/1800 hit ~20:06, audit/eod refused — 5th evening this week (07-06, 07-08, 07-09, 07-10, 07-13), root cause (watchdog/scan polling cadence) still unresolved. Last known-good: bal $9,879.96, flat, 1/5 fills (GBPAUD closed 18:13 SCRATCH -$0.12, poor=True), GBPJPY buy-limit #164195494 still pending @216.55. Monday — no weekend/CB carry risk. Shadow edge +9pts (n=80, take 29%/skip 20%), thin but consistent. Manually Telegram-reported since eod couldn't run; Sheet not updated (no reconciled snapshot to push).
+
+## 2026-07-14 09:30 Dubai — Morning Brief
+Audit clean: bal $9,879.84, daily room $197.60, overall room $879.84, flat, 1 pending (GBPJPY #164195494 @216.55). ForexFactory MCP returned empty for today/week/month/control queries — data outage, not confirmed zero-news. Skipped set-news; engine fail-safe blocks trades until calendar data is confirmed fresh.
+
+### 2026-07-14T13:37:24.348398+04:00
+REFUSED EURCHF sell: news_blackout: news windows missing/stale for today -> fail-safe block
+
+### 2026-07-14T16:38:19.104004+04:00
+REFUSED CADJPY buy: aggregate_risk: aggregate (open+pending+new) risk 1.00% > 1.0%; news_blackout: news windows missing/stale for today -> fail-safe block
+
+### 2026-07-14T16:43:27.175960+04:00
+PLACED: CADJPY BUY 13000u (0.13 lots) | SL 30.0p TP 75.0p | risk $24.70 (0.25%) | R:R 2.50 | worst -$25.97 :: {"orderId": 164397239, "status": "placed"}
+
+## 2026-07-14 16:33 Dubai — NY overlap session
+Repaired stale news-window cache (ForexFactory direct fetch was 403'd; backfilled real CPI/Fed Warsh windows via alt MCP source, confirmed USD was mid-CPI-blackout, CAD/JPY clear). Placed CADJPY buy-limit 114.85 (ny_breakout_retest, 0.25% risk, R:R 2.5) after resistance-cluster breakout + retest. Sized down from 0.5% to stay under 1% aggregate cap alongside existing GBPJPY pending. Skipped NZDJPY/NZDUSD (extended, no pullback) and rest of watchlist (mid-range/choppy).
+
+## 2026-07-14 20:00 Dubai — EOD Review
+Engine blind: request cap 1810/1800 hit ~20:03, audit/eod refused — 6th evening this week (07-06, 07-08, 07-09, 07-10, 07-13, 07-14). Last known-good: bal $9,879.84, day P/L $0.00, 0/5 fills, 0/2 poor, flat. Pending: GBPJPY buy-limit #164195494 @216.55 (placed 07-13 13:38, now >24h old with no expiry tracked — likely stuck unmanaged, flagged for manual review) and CADJPY buy-limit #164397239 @114.85 (placed today 16:43, expires 22:43 Dubai tonight, clears before tomorrow's 13:45 UTC BOC decision — no CB carry risk). Tuesday, no weekend flatten needed. Shadow edge +7pts (n=85, take 27%/skip 20%), down from +9pts — thin sample.
+Lesson: recurring nightly request-cap exhaustion (6/8 trading evenings this week) is now masking real risk — GBPJPY's missing expiry entry went undetected because eod couldn't run; root cause (watchdog/scan polling cadence) needs a real fix, not nightly workarounds.

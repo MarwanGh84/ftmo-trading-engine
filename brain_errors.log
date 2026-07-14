@@ -133,3 +133,21 @@ H1 last 12 bars (oldest first, most recent last):
   ?  O=114.39400 H=114.44900 L=114.38300 C=114.44500
   ?  O=114.44400 H=114.46200 L=114.42100 C=114.45000
   ?  O=114.45100 H=114.62100 L=114.415
+
+=== 2026-07-14T11:05:38 ===
+ERROR: Expecting value: line 1 column 1 (char 0)
+RAW (1435 chars): Looking at this setup carefully:
+
+**Setup type check:** Resistance at 0.92748, D1 bias = bull → this would be a break_retest (price broke above resistance, now retesting from above). H1 broke level = True, H1 extreme = 0.92758 (above level). Current price is just below the level (bid=0.92738), so pr
+PROMPT (first 400 chars):
+ALERT: EURCHF resistance at 0.92748
+Current: bid=0.92738 ask=0.92746 spread=0.8p
+
+D1: bias=bull, SMA20=0.92203, ATR14=30p, last_close=0.92706
+
+H1 last 12 bars (oldest first, most recent last):
+  ?  O=0.92700 H=0.92729 L=0.92695 C=0.92714
+  ?  O=0.92716 H=0.92731 L=0.92702 C=0.92706
+  ?  O=0.92662 H=0.92720 L=0.92642 C=0.92675
+  ?  O=0.92687 H=0.92739 L=0.92687 C=0.92729
+  ?  O=0.92730 H=0.92743 L=
