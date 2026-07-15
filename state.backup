@@ -10,7 +10,7 @@
   "frozen": true,
   "frozen_reason": "cTrader unreachable 36 cycles",
   "frozen_sticky": true,
-  "last_run_iso": "2026-07-15T21:46:43.305086+04:00",
+  "last_run_iso": "2026-07-15T21:50:27.565693+04:00",
   "news_windows": [
     {
       "ccy": "USD",
@@ -149,7 +149,7 @@
     "2026-07-09",
     "2026-07-13"
   ],
-  "unreachable_streak": 36,
+  "unreachable_streak": 0,
   "watchlist_levels": {
     "AUDJPY": {
       "atr": 0.6762142857142835,
