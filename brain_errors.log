@@ -151,3 +151,82 @@ H1 last 12 bars (oldest first, most recent last):
   ?  O=0.92662 H=0.92720 L=0.92642 C=0.92675
   ?  O=0.92687 H=0.92739 L=0.92687 C=0.92729
   ?  O=0.92730 H=0.92743 L=
+
+=== 2026-07-15T10:17:16 ===
+ERROR: Expecting value: line 1 column 1 (char 0)
+RAW (1854 chars): Looking at this setup carefully:
+
+**Setup type**: resistance_fade (price at resistance 115.41200, D1 bull bias)
+- Wait — D1 bias is **bull**, but resistance_fade requires a **bear** D1 trend. This is counter-trend.
+
+**Break_retest check**: H1 broke above 115.41200 (True, extreme at 115.48600). For a
+PROMPT (first 400 chars):
+ALERT: CADJPY resistance at 115.41200
+Current: bid=115.41200 ask=115.42100 spread=0.9p
+
+D1: bias=bull, SMA20=114.16690, ATR14=58p, last_close=115.40100
+
+H1 last 12 bars (oldest first, most recent last):
+  ?  O=115.28000 H=115.31100 L=115.25400 C=115.30700
+  ?  O=115.30800 H=115.32700 L=115.25600 C=115.31500
+  ?  O=115.31700 H=115.41200 L=115.29800 C=115.40100
+  ?  O=115.26900 H=115.32000 L=115.221
+
+=== 2026-07-15T13:25:46 ===
+ERROR: Expecting value: line 1 column 1 (char 0)
+RAW (1610 chars): I need to evaluate this AUDJPY resistance_fade setup carefully.
+
+**Setup type check:** Price is at resistance 113.444 with D1 bull bias → this would be a resistance_fade (sell), but D1 bias is **bull**, not bear. Gate 1 fails immediately for a resistance_fade sell.
+
+**Could this be a support_bounce 
+PROMPT (first 400 chars):
+ALERT: AUDJPY resistance at 113.44400
+Current: bid=113.44400 ask=113.45400 spread=1.0p
+
+D1: bias=bull, SMA20=112.32980, ATR14=68p, last_close=113.14500
+
+H1 last 12 bars (oldest first, most recent last):
+  ?  O=113.06400 H=113.09500 L=112.95400 C=113.08700
+  ?  O=113.07200 H=113.16700 L=113.06900 C=113.11800
+  ?  O=113.11900 H=113.15200 L=113.10400 C=113.14100
+  ?  O=113.14300 H=113.24200 L=113.124
+
+=== 2026-07-15T15:59:31 ===
+ERROR: Expecting value: line 1 column 1 (char 0)
+RAW (1275 chars): Looking at this setup:
+
+**Setup type**: support_bounce (price at support 0.85084, would need D1 bull bias to BUY)
+
+**Gate 1 - D1 Bias**: D1 bias is **BEAR**. A support_bounce requires a BUY, but D1 is bearish. This is counter-trend. ❌
+
+**Gate 6 - COT**: EUR is at 0th percentile (crowded short) — thi
+PROMPT (first 400 chars):
+ALERT: EURGBP support at 0.85084
+Current: bid=0.85079 ask=0.85083 spread=0.4p
+
+D1: bias=bear, SMA20=0.85873, ATR14=28p, last_close=0.85279
+
+H1 last 12 bars (oldest first, most recent last):
+  ?  O=0.85285 H=0.85287 L=0.85275 C=0.85276
+  ?  O=0.85277 H=0.85312 L=0.85277 C=0.85299
+  ?  O=0.85300 H=0.85330 L=0.85297 C=0.85323
+  ?  O=0.85322 H=0.85338 L=0.85318 C=0.85335
+  ?  O=0.85334 H=0.85338 L=0.8
+
+=== 2026-07-15T16:36:42 ===
+ERROR: Expecting value: line 1 column 1 (char 0)
+RAW (1750 chars): I need to evaluate this NZDJPY resistance_fade setup carefully.
+
+**Setup type check:** This is a `resistance_fade` — price at resistance 94.533, D1 bias=bull. But resistance_fade requires D1 **bear** trend to SELL from resistance. D1 bias is **bull** here, so this is counter-trend. That's a direct c
+PROMPT (first 400 chars):
+ALERT: NZDJPY resistance at 94.53300
+Current: bid=94.52700 ask=94.54300 spread=1.6p
+
+D1: bias=bull, SMA20=92.35020, ATR14=70p, last_close=94.25000
+
+H1 last 12 bars (oldest first, most recent last):
+  ?  O=94.27200 H=94.37500 L=94.23700 C=94.36300
+  ?  O=94.36600 H=94.41700 L=94.29200 C=94.40400
+  ?  O=94.40800 H=94.41200 L=94.29700 C=94.30300
+  ?  O=94.30200 H=94.30300 L=94.20600 C=94.29000
+  ?  O

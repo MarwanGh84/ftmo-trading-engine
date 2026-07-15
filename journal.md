@@ -734,3 +734,24 @@ Repaired stale news-window cache (ForexFactory direct fetch was 403'd; backfille
 ## 2026-07-14 20:00 Dubai — EOD Review
 Engine blind: request cap 1810/1800 hit ~20:03, audit/eod refused — 6th evening this week (07-06, 07-08, 07-09, 07-10, 07-13, 07-14). Last known-good: bal $9,879.84, day P/L $0.00, 0/5 fills, 0/2 poor, flat. Pending: GBPJPY buy-limit #164195494 @216.55 (placed 07-13 13:38, now >24h old with no expiry tracked — likely stuck unmanaged, flagged for manual review) and CADJPY buy-limit #164397239 @114.85 (placed today 16:43, expires 22:43 Dubai tonight, clears before tomorrow's 13:45 UTC BOC decision — no CB carry risk). Tuesday, no weekend flatten needed. Shadow edge +7pts (n=85, take 27%/skip 20%), down from +9pts — thin sample.
 Lesson: recurring nightly request-cap exhaustion (6/8 trading evenings this week) is now masking real risk — GBPJPY's missing expiry entry went undetected because eod couldn't run; root cause (watchdog/scan polling cadence) needs a real fix, not nightly workarounds.
+
+## 2026-07-15 09:30 Dubai — Morning Brief
+Audit clean, cTrader reachable, no discrepancies. Balance $9,879.84, daily room $197.60, overall room $879.84. News windows published: USD PPI complex (12:15-12:45Z), CAD BOC rate decision+presser (12:45-15:30Z, cb), USD Fed Warsh testimony (13:45-14:15Z). 2 pending orders (CADJPY, GBPJPY), 0 open positions. No trades this run.
+
+## 2026-07-15 11:00 Dubai — London Open Session
+Audit clean, flat, 0/5 fills, 2 pending unchanged (GBPJPY @216.55, CADJPY @114.85, latter clears before 12:45Z BOC). Scanner flagged JPY-cross bull-breakout cluster (GBPJPY/AUDJPY/CADJPY/NZDJPY) — already covered by existing pendings, skipped rest to avoid JPY-short concentration; also skipped XAUUSD (whipsawing, no clean level) and USDCAD (clean downtrend but BOC event risk today). No new trade — 4 shortlist skips shadow-logged.
+
+## 2026-07-15 13:30 Dubai — London Midday Session
+Same JPY-weakness/USD-soft cluster from the 11:00 run (NZDUSD/AUDJPY/CADJPY/NZDJPY) has now broken cleanly through the 20D-high levels with no pullback or rejection wick — confirms it was one correlated theme, not independent setups; AUDUSD extended the same way. All 5 shadow-logged as skips (continuation is the weakest-performing setup type in the data, JPY is COT crowded_long). No new trade, 0/5 fills. 2 pending unchanged; CADJPY clears ahead of the 16:45 Dubai BOC decision either via its own expiry or engine auto-flatten.
+
+## 2026-07-15 16:33 Dubai — NY Overlap Session (final window)
+Same JPY-weakness theme persists (GBPJPY/AUDJPY/NZDJPY all grinding to fresh highs, zero pullback) — still chasing, still skipped. EURGBP/EURAUD are mid-move toward their levels, not there yet, and both add to COT crowded-short EUR. CAD untouchable — BOC decision ~12:45Z inside blackout. No new trade, 0/5 fills. 2 pending unchanged (GBPJPY @216.55, CADJPY @114.85, latter auto-flattens ahead of BOC). 5 shortlist skips shadow-logged.
+
+## EOD 2026-07-15
+🌙 <b>EOD — Wed 15 Jul</b>
+Balance <code>$9879.84</code>  ·  P/L <code>+$0.00</code>
+Trades <code>0/5</code>  ·  Poor <code>0/2</code>
+Positions  <code>flat</code>
+
+## 2026-07-15 20:00 Dubai — EOD Review (analysis)
+Flat all day, 0/5 fills, 0/2 poor, bal $9,879.84 unchanged. All 4 intraday sessions correctly skipped the same JPY-weakness/USD-soft continuation cluster (no pullback, COT-crowded) — no rail refusals, no checklist failures. Shadow edge +10pts (n=88, take 31%/skip 21%), holding steady vs yesterday's +7pts. **Flag: both pending orders (GBPJPY #164195494 @216.55 since 07-13, and CADJPY #164397239 @114.85, expected to expire 07-14 22:43) are still open past their intended expiry with no expiry timestamp tracked in state.json — CADJPY also sat through today's 12:45-15:30Z BOC window without the news auto-flatten cancelling it.** Recommend manual review/cancellation of both stale orders; expiry-tracking mechanism appears non-functional, not just a one-off.
