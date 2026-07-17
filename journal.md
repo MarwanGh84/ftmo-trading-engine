@@ -770,3 +770,15 @@ Engine still frozen (sticky, "cTrader unreachable 36 cycles") — 4th consecutiv
 
 ## 2026-07-16 20:00 Dubai — EOD Review
 Engine blind: request cap 1830/1800 hit ~20:02, eod/audit refused — 7th cap-exhaustion evening this trading week (root cause unresolved). Last known-good: bal $9,879.84 unchanged all day, 0/5 fills, 0/2 poor, flat (no trades any of today's 3 sessions). Engine still FROZEN (sticky, "cTrader unreachable 36 cycles" since 07-15 21:50) — 5th consecutive session blocked, not_frozen rail blocking all placement; recommend `ftmo unfreeze --force` once connectivity confirmed. Shadow edge +8pts (n=97, take 31%/skip 23%), consistent with recent readings. Thursday — no weekend-flatten needed yet. Manually Telegram-reported since eod couldn't run; Sheet not updated (no reconciled snapshot).
+
+## 2026-07-17 13:33 Dubai — London Midday Session
+Engine still FROZEN (sticky, reason text now reads "cTrader unreachable 36 cycles" but the actual sticky trigger was the 07-15 12:47 "news flatten failed" event — bal $9,879.84 unchanged, 0/5 fills, 0/2 poor, flat, no discrepancies). Now spanning a 3rd calendar day blocked; did not self-unfreeze (out of scope). USDJPY and USDCAD (the only trend-regime candidates) both still show the same no-clean-entry chop flagged all week — shadow-logged as skips. **Unfreeze still needed: run `ftmo unfreeze --force` after confirming no orphaned position from the original 07-15 news-flatten failure.**
+
+## EOD 2026-07-17
+🌙 <b>EOD — Fri 17 Jul</b>
+Balance <code>$9879.84</code>  ·  P/L <code>+$0.00</code>
+Trades <code>0/5</code>  ·  Poor <code>0/2</code>
+Positions  <code>flat</code>
+
+## 2026-07-17 20:00 Dubai — EOD Review (Friday)
+Flat all day, 0/5 fills, 0/2 poor, bal $9,879.84 unchanged — no weekend exposure (0 open/pending). Engine still FROZEN (sticky, "cTrader unreachable 36 cycles") — now day 3 since 07-15 21:50, blocking all placement; still unresolved. Friday weekly `stats --report` failed: request cap 1800/day hit again this evening before it could run (recurring pattern this week). Shadow edge +8pts (n=99, take 31%/skip 23%), holding steady. **Lesson: request-cap exhaustion is now routinely eating the last review of the day — worth auditing what's burning ~1800 calls/day given 0 fills all week.**
