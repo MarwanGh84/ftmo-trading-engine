@@ -782,3 +782,18 @@ Positions  <code>flat</code>
 
 ## 2026-07-17 20:00 Dubai — EOD Review (Friday)
 Flat all day, 0/5 fills, 0/2 poor, bal $9,879.84 unchanged — no weekend exposure (0 open/pending). Engine still FROZEN (sticky, "cTrader unreachable 36 cycles") — now day 3 since 07-15 21:50, blocking all placement; still unresolved. Friday weekly `stats --report` failed: request cap 1800/day hit again this evening before it could run (recurring pattern this week). Shadow edge +8pts (n=99, take 31%/skip 23%), holding steady. **Lesson: request-cap exhaustion is now routinely eating the last review of the day — worth auditing what's burning ~1800 calls/day given 0 fills all week.**
+
+## 2026-07-20 13:33 Dubai — London Midday Session
+Monday, first session after the weekend. Engine still FROZEN (sticky, "cTrader unreachable 474 cycles") despite `audit --report` completing cleanly with live authenticated data (bal $9,879.84 unchanged, flat, 0 discrepancies) — same known sticky-flag bug open since 07-15 21:50, now day 6/~5th trading day blocked; not_frozen rail would refuse any execute regardless of setup quality. All 6 scanner candidates are range-regime, sitting at 20D extremes with no pullback/rejection (JPY/NZD resistance-chase cluster — the weakest-performing setup family in the shadow data). USDCAD (only non-JPY-cluster candidate) is chopping 1.4005-1.4026 for 15h+ post its 07-13 breakdown with no clean retest structure, and CAD CPI (HIGH impact) lands 15:30 Dubai today — shadow-logged as skip. No new trade, 0/5 fills. Shadow edge holding (+9pts, n=100 graded). **Unfreeze still needed — recommend user run `ftmo unfreeze --force` after confirming live connectivity (audit's own data confirms it's live) before this bug costs another week of sessions.**
+
+## 2026-07-20 16:33 Dubai — NY Overlap Session (final window)
+Engine still FROZEN (sticky, "cTrader unreachable 474 cycles") — 7th consecutive session blocked since 07-15 21:50, despite audit + live quotes confirming cTrader is reachable (bal $9,879.84 unchanged, spreads normal, 0 discrepancies). No execute attempted (guaranteed refusal). All 5 candidates (AUDUSD/NZDUSD/AUDJPY/NZDJPY/EURAUD) are range-regime bull-near-resistance chases, no retest — skipped without individual shadow log (trivial, matches week-long pattern). USDCAD spiked to 1.4049 on CAD CPI, now chasing into last week's resistance with no rejection structure, CAD COT crowded_short (caution). CADJPY faded from 20D high back to mid-range. Rest of majors mid-range, no edge. Flat, 0/5 fills, last window of the day. **Unfreeze still needed — 7 sessions lost; recommend `ftmo unfreeze --force` before tomorrow.**
+
+## EOD 2026-07-20
+🌙 <b>EOD — Mon 20 Jul</b>
+Balance <code>$9879.84</code>  ·  P/L <code>+$0.00</code>
+Trades <code>0/5</code>  ·  Poor <code>0/2</code>
+Positions  <code>flat</code>
+
+## 2026-07-20 20:00 Dubai — EOD Review
+Flat all day, 0/5 fills, 0/2 poor, bal $9,879.84 unchanged — Monday, no weekend-flatten check needed. Engine still FROZEN (sticky, "cTrader unreachable 474 cycles") through all 3 sessions today despite audit/quotes confirming live connectivity each time — day 6 since the 07-15 21:50 origin, not_frozen rail blocked any execute regardless of setup quality (none would have qualified anyway — range-regime chase clusters all day). Shadow edge holding +9pts (n=103 graded, take 31%/skip 22%), no new pattern shift. Request budget healthy today (~1370 used, well under 1800 cap). **Unfreeze still needed — recommend `ftmo unfreeze --force` after connectivity re-confirmation; this is now the longest-running open issue (6 calendar days, 7+ sessions lost).**

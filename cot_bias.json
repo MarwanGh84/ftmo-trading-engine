@@ -1,51 +1,51 @@
 {
-  "updated": "2026-07-13T04:59:22.587175+00:00",
+  "updated": "2026-07-20T08:43:43.754374+00:00",
   "new_records_added": 0,
   "currencies": {
     "AUD": {
-      "date": "2026-07-07",
-      "net": 29683,
-      "long": 59300,
-      "short": 29617,
+      "date": "2026-07-14",
+      "net": 27222,
+      "long": 55916,
+      "short": 28694,
       "percentile": 0.0,
       "signal": "crowded_short",
-      "weeks_of_history": 2
+      "weeks_of_history": 3
     },
     "CAD": {
-      "date": "2026-07-07",
-      "net": -85957,
-      "long": 38249,
-      "short": 124206,
+      "date": "2026-07-14",
+      "net": -92771,
+      "long": 33997,
+      "short": 126768,
       "percentile": 0.0,
       "signal": "crowded_short",
-      "weeks_of_history": 2
+      "weeks_of_history": 3
     },
     "CHF": {
-      "date": "2026-07-07",
-      "net": -7218,
-      "long": 10944,
-      "short": 18162,
-      "percentile": 100.0,
-      "signal": "crowded_long",
-      "weeks_of_history": 2
+      "date": "2026-07-14",
+      "net": -9500,
+      "long": 9951,
+      "short": 19451,
+      "percentile": 50.0,
+      "signal": "neutral",
+      "weeks_of_history": 3
     },
     "EUR": {
-      "date": "2026-07-07",
-      "net": -45461,
-      "long": 87460,
-      "short": 132921,
+      "date": "2026-07-14",
+      "net": -53691,
+      "long": 89976,
+      "short": 143667,
       "percentile": 0.0,
       "signal": "crowded_short",
-      "weeks_of_history": 2
+      "weeks_of_history": 3
     },
     "JPY": {
-      "date": "2026-07-07",
-      "net": -90083,
-      "long": 84990,
-      "short": 175073,
-      "percentile": 100.0,
-      "signal": "crowded_long",
-      "weeks_of_history": 2
+      "date": "2026-07-14",
+      "net": -90461,
+      "long": 80938,
+      "short": 171399,
+      "percentile": 50.0,
+      "signal": "neutral",
+      "weeks_of_history": 3
     }
   }
 }

@@ -230,3 +230,23 @@ H1 last 12 bars (oldest first, most recent last):
   ?  O=94.40800 H=94.41200 L=94.29700 C=94.30300
   ?  O=94.30200 H=94.30300 L=94.20600 C=94.29000
   ?  O
+
+=== 2026-07-20T17:26:20 ===
+ERROR: Expecting value: line 1 column 1 (char 0)
+RAW (1412 chars): Looking at this setup systematically:
+
+**Setup type check:** This is a `support_bounce` alert at 1.62974, which requires D1 bull bias → BUY. But D1 bias = **bear**. This is an immediate disqualifying mismatch — a support_bounce requires bullish D1 alignment.
+
+**Additional issues even if we ignored b
+PROMPT (first 400 chars):
+ALERT: EURAUD support at 1.62974
+Current: bid=1.62971 ask=1.62983 spread=1.2p
+
+D1: bias=bear, SMA20=1.64489, ATR14=74p, last_close=1.63801
+
+H1 last 12 bars (oldest first, most recent last):
+  ?  O=1.63683 H=1.63690 L=1.63581 C=1.63643
+  ?  O=1.63642 H=1.63678 L=1.63562 C=1.63616
+  ?  O=1.63619 H=1.63667 L=1.63575 C=1.63600
+  ?  O=1.63600 H=1.63604 L=1.63510 C=1.63561
+  ?  O=1.63564 H=1.63666 L=1.6
