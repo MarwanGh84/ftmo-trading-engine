@@ -1,71 +1,16 @@
 {
   "account_baseline": 10000.0,
-  "candidates": [
-    {
-      "bias": "bull",
-      "near": "resistance",
-      "note": "near 20D high 162.83800",
-      "price": "162.55050",
-      "regime": "trend_up",
-      "symbol": "USDJPY",
-      "time": "20:04"
-    },
-    {
-      "bias": "bull",
-      "near": "resistance",
-      "note": "near 20D high 0.70211",
-      "price": "0.70041",
-      "regime": "range",
-      "symbol": "AUDUSD",
-      "time": "20:04"
-    },
-    {
-      "bias": "bull",
-      "near": "resistance",
-      "note": "near 20D high 0.58631",
-      "price": "0.58466",
-      "regime": "range",
-      "symbol": "NZDUSD",
-      "time": "20:04"
-    },
-    {
-      "bias": "bull",
-      "near": "resistance",
-      "note": "near 20D high 113.87600",
-      "price": "113.85300",
-      "regime": "range",
-      "symbol": "AUDJPY",
-      "time": "20:04"
-    },
-    {
-      "bias": "bull",
-      "near": "resistance",
-      "note": "near 20D high 95.07800",
-      "price": "95.03800",
-      "regime": "range",
-      "symbol": "NZDJPY",
-      "time": "20:04"
-    },
-    {
-      "bias": "bear",
-      "near": "support",
-      "note": "near 20D low 1.62974",
-      "price": "1.62937",
-      "regime": "range",
-      "symbol": "EURAUD",
-      "time": "20:04"
-    }
-  ],
-  "candidates_time": "20:04",
+  "candidates": [],
+  "candidates_time": "19:23",
   "counted_positions": [],
   "daily_limit_hit": false,
   "daily_pnl": 0.0,
   "day_start_balance": 9879.84,
   "executed_signals": [],
   "frozen": true,
-  "frozen_reason": "cTrader unreachable 474 cycles",
+  "frozen_reason": "cTrader unreachable 215 cycles",
   "frozen_sticky": true,
-  "last_run_iso": "2026-07-20T20:06:50.039107+04:00",
+  "last_run_iso": "2026-07-21T19:58:30.978360+04:00",
   "news_windows": [
     {
       "ccy": "CAD",
@@ -137,7 +82,7 @@
     },
     "USDJPY": {
       "key": "resistance:162.838",
-      "ts": "2026-07-20T19:34:23.816244+04:00"
+      "ts": "2026-07-20T21:05:31.196079+04:00"
     },
     "XAUUSD": {
       "key": "support:3941.74",
@@ -167,144 +112,8 @@
     "2026-07-09",
     "2026-07-13"
   ],
-  "unreachable_streak": 0,
+  "unreachable_streak": 215,
   "watchlist_levels": {
-    "AUDJPY": {
-      "atr": 0.7009285714285716,
-      "bias": "bull",
-      "recent_high": 113.876,
-      "recent_low": 111.15,
-      "regime": "range",
-      "trend_strength": -0.0
-    },
-    "AUDUSD": {
-      "atr": 0.004377142857142857,
-      "bias": "bull",
-      "recent_high": 0.70211,
-      "recent_low": 0.68652,
-      "regime": "range",
-      "trend_strength": -0.85
-    },
-    "CADJPY": {
-      "atr": 0.5953571428571404,
-      "bias": "bull",
-      "recent_high": 116.021,
-      "recent_low": 113.311,
-      "regime": "range",
-      "trend_strength": 0.33
-    },
-    "EURAUD": {
-      "atr": 0.007404999999999932,
-      "bias": "bear",
-      "recent_high": 1.66186,
-      "recent_low": 1.62974,
-      "regime": "range",
-      "trend_strength": 0.1
-    },
-    "EURCHF": {
-      "atr": 0.003524285714285726,
-      "bias": "bull",
-      "recent_high": 0.92787,
-      "recent_low": 0.91764,
-      "regime": "range",
-      "trend_strength": 0.28
-    },
-    "EURGBP": {
-      "atr": 0.00316357142857144,
-      "bias": "bear",
-      "recent_high": 0.86861,
-      "recent_low": 0.84544,
-      "regime": "trend_down",
-      "trend_strength": -2.02
-    },
-    "EURJPY": {
-      "atr": 0.8732142857142833,
-      "bias": "bull",
-      "recent_high": 186.03,
-      "recent_low": 183.165,
-      "regime": "range",
-      "trend_strength": 0.09
-    },
-    "EURUSD": {
-      "atr": 0.005407857142857171,
-      "bias": "bull",
-      "recent_high": 1.14823,
-      "recent_low": 1.13245,
-      "regime": "trend_down",
-      "trend_strength": -1.04
-    },
-    "GBPAUD": {
-      "atr": 0.010050000000000019,
-      "bias": "bull",
-      "recent_high": 1.9361,
-      "recent_low": 1.8795,
-      "regime": "trend_up",
-      "trend_strength": 1.51
-    },
-    "GBPJPY": {
-      "atr": 1.246214285714282,
-      "bias": "bull",
-      "recent_high": 219.604,
-      "recent_low": 212.529,
-      "regime": "trend_up",
-      "trend_strength": 1.37
-    },
-    "GBPUSD": {
-      "atr": 0.008040714285714274,
-      "bias": "bull",
-      "recent_high": 1.35579,
-      "recent_low": 1.314,
-      "regime": "range",
-      "trend_strength": 0.42
-    },
-    "NZDJPY": {
-      "atr": 0.7308571428571418,
-      "bias": "bull",
-      "recent_high": 95.078,
-      "recent_low": 91.035,
-      "regime": "range",
-      "trend_strength": 0.34
-    },
-    "NZDUSD": {
-      "atr": 0.004767857142857117,
-      "bias": "bull",
-      "recent_high": 0.58631,
-      "recent_low": 0.56261,
-      "regime": "range",
-      "trend_strength": -0.32
-    },
-    "USDCAD": {
-      "atr": 0.005524285714285712,
-      "bias": "bear",
-      "recent_high": 1.4248,
-      "recent_low": 1.40055,
-      "regime": "range",
-      "trend_strength": 0.93
-    },
-    "USDCHF": {
-      "atr": 0.005585714285714289,
-      "bias": "bear",
-      "recent_high": 0.81514,
-      "recent_low": 0.80098,
-      "regime": "range",
-      "trend_strength": 0.86
-    },
-    "USDJPY": {
-      "atr": 0.8178571428571482,
-      "bias": "bull",
-      "recent_high": 162.838,
-      "recent_low": 160.482,
-      "regime": "trend_up",
-      "trend_strength": 1.05
-    },
-    "XAUUSD": {
-      "atr": 96.76357142857147,
-      "bias": "bear",
-      "recent_high": 4220.4,
-      "recent_low": 3941.74,
-      "regime": "range",
-      "trend_strength": -0.86
-    },
-    "_date": "2026-07-20"
+    "_date": "2026-07-21"
   }
 }

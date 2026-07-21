@@ -797,3 +797,6 @@ Positions  <code>flat</code>
 
 ## 2026-07-20 20:00 Dubai — EOD Review
 Flat all day, 0/5 fills, 0/2 poor, bal $9,879.84 unchanged — Monday, no weekend-flatten check needed. Engine still FROZEN (sticky, "cTrader unreachable 474 cycles") through all 3 sessions today despite audit/quotes confirming live connectivity each time — day 6 since the 07-15 21:50 origin, not_frozen rail blocked any execute regardless of setup quality (none would have qualified anyway — range-regime chase clusters all day). Shadow edge holding +9pts (n=103 graded, take 31%/skip 22%), no new pattern shift. Request budget healthy today (~1370 used, well under 1800 cap). **Unfreeze still needed — recommend `ftmo unfreeze --force` after connectivity re-confirmation; this is now the longest-running open issue (6 calendar days, 7+ sessions lost).**
+
+## 2026-07-21 20:00 Dubai — EOD Review
+**No reconciled data** — `ftmo eod --report` failed outright: bridge on 127.0.0.1:9876 refused connection (6/6 retries), not just the prior sticky-flag issue. Cannot verify positions, weekend/CB exposure, or run shadow-stats. No trade actions taken (none possible). Telegram-alerted manually since the engine couldn't. **Action needed: restart/check the local cTrader bridge process before next session — this is a harder failure than the sticky-FROZEN bug tracked all week.**
