@@ -1,16 +1,16 @@
 {
   "account_baseline": 10000.0,
   "candidates": [],
-  "candidates_time": "19:23",
+  "candidates_time": "21:22",
   "counted_positions": [],
   "daily_limit_hit": false,
   "daily_pnl": 0.0,
   "day_start_balance": 9879.84,
   "executed_signals": [],
   "frozen": true,
-  "frozen_reason": "cTrader unreachable 215 cycles",
+  "frozen_reason": "cTrader unreachable 379 cycles",
   "frozen_sticky": true,
-  "last_run_iso": "2026-07-21T19:58:30.978360+04:00",
+  "last_run_iso": "2026-07-23T09:28:33.614935+04:00",
   "news_windows": [
     {
       "ccy": "CAD",
@@ -112,8 +112,8 @@
     "2026-07-09",
     "2026-07-13"
   ],
-  "unreachable_streak": 215,
+  "unreachable_streak": 0,
   "watchlist_levels": {
-    "_date": "2026-07-21"
+    "_date": "2026-07-22"
   }
 }

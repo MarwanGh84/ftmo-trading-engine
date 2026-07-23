@@ -800,3 +800,18 @@ Flat all day, 0/5 fills, 0/2 poor, bal $9,879.84 unchanged — Monday, no weeken
 
 ## 2026-07-21 20:00 Dubai — EOD Review
 **No reconciled data** — `ftmo eod --report` failed outright: bridge on 127.0.0.1:9876 refused connection (6/6 retries), not just the prior sticky-flag issue. Cannot verify positions, weekend/CB exposure, or run shadow-stats. No trade actions taken (none possible). Telegram-alerted manually since the engine couldn't. **Action needed: restart/check the local cTrader bridge process before next session — this is a harder failure than the sticky-FROZEN bug tracked all week.**
+
+## 2026-07-23 16:33 Dubai — NY Overlap Session (final window)
+Engine still FROZEN ("cTrader unreachable 379 cycles") despite `audit --report` completing cleanly with live authenticated data (bal $9,879.84 unchanged, flat, 0 discrepancies, 0/5 fills, 0/2 poor) — same sticky-flag bug open since 07-15 21:50, now 8+ calendar days / 10+ sessions blocked; not_frozen rail would refuse any execute regardless of setup quality. Scanner candidate queue was empty this scan (0 flagged) — no shortlist to weigh, no shadow logs this run. Shadow edge holding +9pts (n=103 graded, take 31%/skip 22%). COT: AUD/CAD/EUR crowded_short, CHF/JPY neutral — relevant caution flags whenever candidates return. Noted a `session-audit` CLI subcommand exists in the engine (auto-analyzes all 17 pairs + auto-executes via its own Claude API call) — did NOT invoke it, since that would delegate the trade decision to a separate automated pipeline instead of this session's own analysis, outside what was asked. No trade, last window of the day closes flat. **Unfreeze still needed — recommend `ftmo unfreeze --force` after connectivity re-confirmation before tomorrow.**
+
+## 2026-07-23 09:32 Dubai — Morning Brief
+Audit live/authenticated (bal $9,879.84, 0 discrepancies, flat). ForexFactory tool returned empty for today/yesterday/this_week/last_week — treated as data outage, not zero-news; skipped set-news so the stale-news fail-safe keeps blocking entries. Sticky FROZEN ("cTrader unreachable 379 cycles", open since 07-15) also still blocks placement independently — unresolved, day 8.
+
+## EOD 2026-07-23
+🌙 <b>EOD — Thu 23 Jul</b>
+Balance <code>$9879.84</code>  ·  P/L <code>+$0.00</code>
+Trades <code>0/5</code>  ·  Poor <code>0/2</code>
+Positions  <code>flat</code>
+
+## 2026-07-23 20:00 Dubai — EOD Review
+Flat all day (0/5 fills, 0/2 poor), audit confirms live/authenticated, 0 discrepancies, no open/pending exposure so no weekend/CB check needed (Thursday). Still FROZEN ("cTrader unreachable 379 cycles") for the 9th straight calendar day since 07-15 21:50 despite repeated live-connectivity confirmation — blocked all 3 sessions today regardless of setup quality. Shadow edge steady +9pts (n=103 graded, take 31%/skip 22%). No rail refusals to review (frozen preempted any execute attempt). **Lesson: the sticky-FROZEN bug has now cost 9+ days / 12+ sessions — this is the single highest-priority open issue; recommend `ftmo unfreeze --force` before tomorrow's first session.**
